@@ -103,6 +103,20 @@ rich result; eligibility is not a guarantee.
 6. Run IndexNow (below).
 7. Request indexing for the pages that changed.
 
+### Canonical host
+
+`https://mriridescent.africa` is the primary domain in Netlify; `www` is an
+alias and 301s to the apex. Canonicals, Open Graph URLs, the sitemap, `llms.txt`,
+and the IndexNow payload all use the apex, so never change one without the other.
+
+The domain sits behind Cloudflare, which caches redirects for up to four hours
+(the zone's 4-hour browser cache TTL). After any domain or primary-host change,
+purge `https://mriridescent.africa/*` in **Cloudflare → Caching → Purge Cache**.
+Otherwise a stale 301 can survive the change — a stale apex→www redirect plus
+the correct www→apex redirect produces a loop that blocks `/robots.txt` until
+the cache entry expires. Verify with `curl -sI` on both hosts; the apex must be
+`200` and `www` must be `301` to the apex.
+
 ### IndexNow
 
 ```bash
