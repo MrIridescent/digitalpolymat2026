@@ -13,6 +13,10 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      # Job-level copy of the secret so the deploy step can tell whether the
+      # FTP target is configured. Secrets cannot be read directly in `if:`.
+      CPANEL_FTP_SERVER: ${{ secrets.CPANEL_FTP_SERVER }}
     
     steps:
     - name: Checkout code
@@ -111,8 +115,14 @@ jobs:
         echo "Commit: ${{ github.sha }}" >> deployment/deployment-info.txt
         echo "Branch: ${{ github.ref_name }}" >> deployment/deployment-info.txt
         
+    - name: Deployment target not configured
+      if: github.event_name != 'pull_request' && env.CPANEL_FTP_SERVER == ''
+      run: |
+        echo "::warning::CPANEL_FTP_SERVER is not set. The build passed, but nothing was deployed."
+        echo "Add CPANEL_FTP_SERVER, CPANEL_FTP_USERNAME, CPANEL_FTP_PASSWORD, and CPANEL_FTP_SERVER_DIR to the repository secrets to enable deployment."
+
     - name: Deploy to cPanel via FTP
-      if: github.event_name != 'pull_request'
+      if: github.event_name != 'pull_request' && env.CPANEL_FTP_SERVER != ''
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
         server: ${{ secrets.CPANEL_FTP_SERVER }}
@@ -130,7 +140,7 @@ jobs:
           **/*.log
         
     - name: Deployment Success Notification
-      if: success()
+      if: success() && github.event_name != 'pull_request' && env.CPANEL_FTP_SERVER != ''
       run: |
         echo "🎉 Deployment successful!"
         echo "Your Digital Polymath Portfolio is now live!"
