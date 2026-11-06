@@ -2,17 +2,25 @@
  * Contentful blog layer.
  *
  * The site is a static export, so Contentful is read at build time through the
- * public Delivery API. When the space credentials are missing — or the request
- * fails, times out, or returns nothing usable — the journal falls back to the
- * local essays in `lib/blog-fallback.ts` so a build never breaks because a
- * third party is down. When Contentful is available, its entries are merged
+ * Delivery or Preview API. When the space credentials are missing — or the
+ * request fails, times out, or returns nothing usable — the journal falls back
+ * to the local essays in `lib/blog-fallback.ts` so a build never breaks because
+ * a third party is down. When Contentful is available, its entries are merged
  * with the local essays; a Contentful entry with the same slug wins.
+ *
+ * Two read APIs are supported:
+ *   Delivery API (cdn.contentful.com)    published entries — production
+ *   Preview API  (preview.contentful.com) drafts + published — local/staging
  *
  * Environment variables (never exposed to the client):
  *   CONTENTFUL_SPACE_ID
- *   CONTENTFUL_ACCESS_TOKEN
- *   CONTENTFUL_ENVIRONMENT      optional, defaults to "master"
- *   CONTENTFUL_CONTENT_TYPE     optional, defaults to "blogPost"
+ *   CONTENTFUL_ACCESS_TOKEN            Delivery API token (published content)
+ *   CONTENTFUL_PREVIEW_ACCESS_TOKEN    Preview API token (drafts); required
+ *                                      only when preview mode is on
+ *   CONTENTFUL_USE_PREVIEW             optional, "true" switches APIs
+ *   CONTENTFUL_ENVIRONMENT             optional, defaults to "master"
+ *   CONTENTFUL_CONTENT_TYPE            optional, defaults to "blogPost"
+ *   CONTENTFUL_LOCALE                  optional, master locale when omitted
  */
 
 import { fallbackPosts } from './blog-fallback'
@@ -82,20 +90,39 @@ type ContentfulResponse = {
   includes?: { Asset?: ContentfulAsset[] }
 }
 
-const API_ROOT = 'https://cdn.contentful.com'
+const DELIVERY_API_ROOT = 'https://cdn.contentful.com'
+const PREVIEW_API_ROOT = 'https://preview.contentful.com'
 const REQUEST_TIMEOUT_MS = 8000
 const WORDS_PER_MINUTE = 220
+
+export type ContentfulMode = 'delivery' | 'preview'
 
 function spaceId() {
   return process.env.CONTENTFUL_SPACE_ID?.trim()
 }
 
+/**
+ * Preview mode is opt-in. A static export must never ship drafts accidentally,
+ * so anything other than an explicit `true` keeps the Delivery API.
+ */
+export function contentfulMode(): ContentfulMode {
+  return process.env.CONTENTFUL_USE_PREVIEW?.trim().toLowerCase() === 'true'
+    ? 'preview'
+    : 'delivery'
+}
+
 function accessToken() {
-  return process.env.CONTENTFUL_ACCESS_TOKEN?.trim()
+  return contentfulMode() === 'preview'
+    ? process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN?.trim()
+    : process.env.CONTENTFUL_ACCESS_TOKEN?.trim()
 }
 
 export function contentfulConfigured() {
   return Boolean(spaceId() && accessToken())
+}
+
+export function contentfulApiRoot() {
+  return contentfulMode() === 'preview' ? PREVIEW_API_ROOT : DELIVERY_API_ROOT
 }
 
 export function contentfulContentType() {
@@ -269,6 +296,15 @@ function sortPosts(posts: BlogPost[]) {
 async function requestContentful(): Promise<ContentfulResponse | null> {
   if (!contentfulConfigured()) return null
 
+  const mode = contentfulMode()
+  const apiName = mode === 'preview' ? 'Preview API' : 'Delivery API'
+
+  if (mode === 'preview') {
+    console.warn(
+      '[contentful] Preview API enabled — unpublished drafts may be rendered in this build.'
+    )
+  }
+
   const params = new URLSearchParams({
     access_token: accessToken() as string,
     content_type: contentfulContentType(),
@@ -277,7 +313,10 @@ async function requestContentful(): Promise<ContentfulResponse | null> {
     limit: '100',
   })
 
-  const url = `${API_ROOT}/spaces/${spaceId()}/environments/${environmentId()}/entries?${params.toString()}`
+  const locale = process.env.CONTENTFUL_LOCALE?.trim()
+  if (locale) params.set('locale', locale)
+
+  const url = `${contentfulApiRoot()}/spaces/${spaceId()}/environments/${environmentId()}/entries?${params.toString()}`
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
@@ -289,14 +328,14 @@ async function requestContentful(): Promise<ContentfulResponse | null> {
     })
     if (!response.ok) {
       console.warn(
-        `[contentful] Delivery API responded ${response.status}; using local journal fallback.`
+        `[contentful] ${apiName} responded ${response.status}; using local journal fallback.`
       )
       return null
     }
     return (await response.json()) as ContentfulResponse
   } catch (error) {
     console.warn(
-      '[contentful] Could not reach the Delivery API; using local journal fallback.',
+      `[contentful] Could not reach the ${apiName}; using local journal fallback.`,
       error instanceof Error ? error.message : error
     )
     return null

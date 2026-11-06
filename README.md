@@ -47,7 +47,8 @@ journal is powered by Contentful at build time, with a local essay fallback.
 - **Motion:** GSAP + ScrollTrigger, Lenis smooth scroll, Framer Motion, CSS scroll-driven reveals, marquees, route curtain
 - **Graphics:** CSS spectral gradients, arch masks, outlined type, pointer aura, keyframe-animated SVG icons
 - **Icons:** Lucide React plus the purpose-built `KineticIcon` set
-- **Journal:** Contentful Delivery API fetched at build time, rendered with a local rich-text renderer; publish with `npm run blog:publish`; local fallback essays live in `lib/blog-fallback.ts`
+- **Journal:** Contentful Delivery or Preview API fetched at build time, rendered with a local rich-text renderer; publish with `npm run blog:publish`; local fallback essays live in `lib/blog-fallback.ts`
+- **Quotes:** a 129-line working library with category filters, search, saved lines, and a page-aware passage above the footer
 - **Forms:** Netlify Function (`netlify/functions/contact.js`) delivering through Resend, with optional SMTP fallback
 - **Live chat:** WhatsApp click-to-chat with prefilled intent templates
 - **Assets:** `sharp` (brand images) and Playwright (résumé PDF)
@@ -86,7 +87,8 @@ lib/
   organizations.ts      Organization logo registry and monogram fallbacks
   projects.ts           Project catalogue and featured selection
   media.ts              Registry of every public asset and where it is used
-  quotes.ts             Quote library
+  quotes.ts             Quote library and category order
+  quote-passage.ts      Route-to-category map and deterministic page quote selection
   share.ts              Share intents, channels, and tracked-link helpers
   seo-config.ts         Metadata and canonical URL helpers
 netlify/
@@ -170,14 +172,18 @@ included automatically.
 
 ## Journal (Contentful)
 
-The journal is fetched at build time from the Contentful Delivery API. Set these
-server-side environment variables in the build environment (they are never
-exposed to the browser):
+The journal is fetched at build time from the Contentful Delivery API, or from
+the Preview API when `CONTENTFUL_USE_PREVIEW=true` (useful locally to read a
+draft before publishing; leave it `false` in production). Set these server-side
+environment variables in the build environment (they are never exposed to the
+browser):
 
 | Variable | Purpose |
 | --- | --- |
 | `CONTENTFUL_SPACE_ID` | Contentful space |
 | `CONTENTFUL_ACCESS_TOKEN` | Delivery API token (read-only, used by the build) |
+| `CONTENTFUL_PREVIEW_ACCESS_TOKEN` | Preview API token, used only when `CONTENTFUL_USE_PREVIEW=true` |
+| `CONTENTFUL_USE_PREVIEW` | `false` (default) for published content; `true` to build with drafts locally |
 | `CONTENTFUL_MANAGEMENT_TOKEN` | CMA token (write access, used only by `blog:publish`) |
 | `CONTENTFUL_ENVIRONMENT` | Optional, defaults to `master` |
 | `CONTENTFUL_CONTENT_TYPE` | Optional, defaults to `blogPost` |

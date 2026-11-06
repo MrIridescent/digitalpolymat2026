@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ArrowUpRight, Download, Mail, Menu, MessageCircle, X } from 'lucide-react'
 import { OrgLogo } from '@/components/site/OrgLogo'
+import { NavQuote } from '@/components/site/NavQuote'
 import { Magnetic } from '@/components/kinetic/Magnetic'
 import { LocalClock } from '@/components/kinetic/LocalClock'
 import { cn } from '@/lib/utils'
@@ -19,6 +20,7 @@ const primary = [
   { name: 'About', href: '/about' },
   { name: 'Credentials', href: '/credentials' },
   { name: 'Journal', href: '/blog' },
+  { name: 'Quotes', href: '/quotes' },
 ]
 
 const secondary = [
@@ -28,7 +30,6 @@ const secondary = [
   { name: 'Practice at a glance', href: '/statistics' },
   { name: 'Philosophy', href: '/philosophy' },
   { name: 'Emerging technology', href: '/emerging-tech' },
-  { name: 'Quotes', href: '/quotes' },
   { name: 'Résumé', href: '/resume' },
   { name: 'Share kit', href: '/share' },
   { name: 'QR atelier', href: '/qr' },
@@ -131,6 +132,8 @@ export function Navigation() {
               )
             })}
           </nav>
+
+          <NavQuote />
 
           <div className="hidden items-center gap-2 lg:flex">
             <a

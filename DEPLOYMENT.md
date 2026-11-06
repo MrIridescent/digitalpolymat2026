@@ -51,18 +51,27 @@ are read by `npm run build`; `RESEND_*` is read by the function at runtime.
 | `CONTACT_FROM_EMAIL` | Recommended | `David Akpoviroro Oke <website@hello.i2sltd.click>` (verified sender) |
 | `CONTACT_AUTO_REPLY` | No | `true` by default; `false` disables the visitor acknowledgement |
 | `CONTENTFUL_SPACE_ID` | Optional | Enables Contentful journal entries |
-| `CONTENTFUL_ACCESS_TOKEN` | Optional | Delivery API token (read-only) |
+| `CONTENTFUL_ACCESS_TOKEN` | Optional | Delivery API token — published content |
+| `CONTENTFUL_PREVIEW_ACCESS_TOKEN` | Optional | Preview API token — drafts (local/staging only) |
+| `CONTENTFUL_USE_PREVIEW` | Optional | `false` (default) uses Delivery; `true` uses Preview |
 | `CONTENTFUL_ENVIRONMENT` | Optional | Defaults to `master` |
 | `CONTENTFUL_CONTENT_TYPE` | Optional | Defaults to `blogPost` |
-| `CONTENTFUL_LOCALE` | Optional | Defaults to `en-US` |
+| `CONTENTFUL_LOCALE` | Optional | Sent only when set; otherwise Contentful's master locale |
 | `BLOG_REBUILD_WEBHOOK_URL` | Optional | Netlify build hook used by `npm run blog:publish` |
+
+Contentful exposes two read APIs. The **Delivery API** (`cdn.contentful.com`)
+returns published entries and is what production uses. The **Preview API**
+(`preview.contentful.com`) also returns drafts and requires its own access token.
+Set `CONTENTFUL_USE_PREVIEW=true` locally to see a draft before publishing, then
+keep it `false` in Netlify — a static export bakes the content it reads, so
+preview mode on the production site would publish drafts.
 
 `CONTENTFUL_MANAGEMENT_TOKEN` is only needed locally to publish posts. Do not add
 it to Netlify: the build only reads content. Never prefix a secret with
 `NEXT_PUBLIC_`, and never commit `.env.local`.
 
 If the Contentful variables are missing or the API fails, the build still
-succeeds and renders the five local essays in `lib/blog-fallback.ts`.
+succeeds and renders the local essays in `lib/blog-fallback.ts`.
 
 ## 3. Verify Resend
 

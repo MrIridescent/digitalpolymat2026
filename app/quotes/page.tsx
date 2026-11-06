@@ -14,7 +14,7 @@ import {
   Shuffle,
 } from 'lucide-react'
 import Link from 'next/link'
-import { quotes } from '@/lib/quotes'
+import { quotes, quoteCategoryOrder } from '@/lib/quotes'
 
 const FAVORITES_KEY = 'iridescent:quote-favorites'
 
@@ -42,10 +42,14 @@ export default function QuotesPage() {
     }
   }, [favorites])
 
-  const categories = useMemo(
-    () => ['All', ...Array.from(new Set(quotes.map((quote) => quote.category)))],
-    []
-  )
+  const categories = useMemo(() => {
+    const present = new Set(quotes.map((quote) => quote.category))
+    const ordered = quoteCategoryOrder.filter(
+      (item) => item === 'All' || present.has(item)
+    )
+    const extras = [...present].filter((item) => !ordered.includes(item))
+    return [...ordered, ...extras]
+  }, [])
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase()
@@ -57,7 +61,8 @@ export default function QuotesPage() {
           !normalized ||
           quote.text.toLowerCase().includes(normalized) ||
           quote.author.toLowerCase().includes(normalized) ||
-          quote.category.toLowerCase().includes(normalized)
+          quote.category.toLowerCase().includes(normalized) ||
+          quote.source?.toLowerCase().includes(normalized)
         return matchesCategory && matchesQuery
       })
   }, [category, query])
@@ -116,8 +121,9 @@ export default function QuotesPage() {
           </h1>
           <p className="animate-rise delay-2 mt-7 max-w-2xl text-base leading-relaxed text-white/55 sm:text-lg">
             A collection of lines that shaped how I think about craft, systems,
-            and the polymathic life — from Renaissance masters, engineers, and
-            writers who refused the boundaries of their time.
+            and the polymathic life — from Renaissance masters and engineers to
+            the African thinkers who insisted the future could be invented from
+            first principles.
           </p>
         </div>
       </section>
@@ -153,6 +159,11 @@ export default function QuotesPage() {
                     <figcaption className="mt-8 text-sm text-white/55">
                       <span className="font-semibold text-white">{current.author}</span>
                       <span className="text-white/30"> · {current.context}</span>
+                      {current.source ? (
+                        <span className="mt-2 block text-[0.68rem] text-white/25">
+                          {current.source}
+                        </span>
+                      ) : null}
                     </figcaption>
                   </motion.figure>
                 </AnimatePresence>
@@ -327,6 +338,9 @@ export default function QuotesPage() {
                   <div>
                     <p className="text-xs font-medium text-white/80">{quote.author}</p>
                     <p className="mt-0.5 text-[0.68rem] text-white/30">{quote.context}</p>
+                    {quote.source ? (
+                      <p className="mt-1 text-[0.6rem] text-white/20">{quote.source}</p>
+                    ) : null}
                   </div>
                   <button
                     onClick={() => {
