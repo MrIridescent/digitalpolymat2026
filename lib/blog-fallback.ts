@@ -4,8 +4,9 @@
  * These render whenever Contentful is not configured or cannot be reached, so
  * the journal is never an empty page and the static build never depends on a
  * third party being available. Once CONTENTFUL_SPACE_ID and
- * CONTENTFUL_ACCESS_TOKEN are set in the build environment, published entries
- * replace these automatically.
+ * CONTENTFUL_ACCESS_TOKEN are set in the build environment, entries published
+ * in Contentful are added to the journal alongside these; a remote post with
+ * the same slug replaces the local one.
  */
 
 import type { BlogPost, RichTextDocument, RichTextNode } from './contentful'

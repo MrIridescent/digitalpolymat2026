@@ -5,7 +5,8 @@
  * public Delivery API. When the space credentials are missing — or the request
  * fails, times out, or returns nothing usable — the journal falls back to the
  * local essays in `lib/blog-fallback.ts` so a build never breaks because a
- * third party is down.
+ * third party is down. When Contentful is available, its entries are merged
+ * with the local essays; a Contentful entry with the same slug wins.
  *
  * Environment variables (never exposed to the client):
  *   CONTENTFUL_SPACE_ID
@@ -315,7 +316,12 @@ export async function getPosts(): Promise<BlogPost[]> {
         .map((entry) => normaliseEntry(entry, assets))
         .filter((post): post is BlogPost => Boolean(post))
 
-      return remote.length > 0 ? sortPosts(remote) : fallbackPosts
+      // Keep the written archive and add new entries from Contentful. A remote
+      // entry with the same slug replaces its local counterpart.
+      const merged = new Map(fallbackPosts.map((post) => [post.slug, post]))
+      for (const post of remote) merged.set(post.slug, post)
+
+      return sortPosts([...merged.values()])
     })()
   }
   return postsPromise

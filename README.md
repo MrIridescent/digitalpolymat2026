@@ -187,8 +187,10 @@ exposed to the browser):
 never in a commit.
 
 If any required variable is missing, the fetch fails, or the space returns no
-entries, the build falls back to the five local essays in `lib/blog-fallback.ts`.
-A fallback build still succeeds and still produces every article route, so the
+entries, the build still renders the five local essays in
+`lib/blog-fallback.ts`. When Contentful is available, its entries are added to
+the journal and a remote entry with the same slug replaces the local one. A
+fallback build still succeeds and still produces every article route, so the
 site never ships an empty journal.
 
 ### Content type fields
