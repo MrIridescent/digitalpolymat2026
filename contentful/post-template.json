@@ -1,0 +1,11 @@
+{
+  "title": "The post title",
+  "slug": "the-post-title",
+  "excerpt": "One or two sentences used on the journal card and in search results.",
+  "publishedAt": "2026-11-06T09:00:00.000Z",
+  "tags": ["Growth", "Systems"],
+  "featured": false,
+  "cover": "public/media/blog/systems.webp",
+  "coverAlt": "Describe the cover photograph for screen readers",
+  "body": "## A section heading\n\nWrite the opening paragraph here. **Bold**, *italic*, `inline code`, and [links](https://example.com) are supported.\n\n- A bullet point\n- Another bullet point\n\n> A pull quote that deserves its own line.\n\n### A smaller heading\n\nClose with the idea the reader should carry away.\n\n---\n\nWritten by David Akpoviroro Oke."
+}

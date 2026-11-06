@@ -1,0 +1,325 @@
+/* Dynamic Theme System - CSS Variables and Layout Classes */
+
+:root {
+  /* Default theme variables - will be overridden by JavaScript */
+  --color-primary: #3b82f6;
+  --color-secondary: #64748b;
+  --color-accent: #f59e0b;
+  --color-background: #ffffff;
+  --color-surface: #f8fafc;
+  --color-text: #1e293b;
+  --color-textSecondary: #64748b;
+  
+  --layout-type: 'grid';
+  --layout-columns: 'repeat(4, 1fr)';
+  --layout-rows: 'auto 1fr auto';
+  --layout-areas: '"header header header header" "main main main sidebar" "footer footer footer footer"';
+  --layout-gap: '2rem';
+  
+  --typography-primary: 'Inter';
+  --typography-secondary: 'JetBrains Mono';
+  --typography-scale: 1;
+  --typography-weight: '400';
+  
+  --animation-speed: 'medium';
+  --animation-intensity: 'medium';
+  --animation-style: 'smooth';
+  
+  --effect-particles: 0;
+  --effect-gradients: 1;
+  --effect-shadows: 1;
+  --effect-blur: 0;
+  --effect-glow: 0;
+  
+  --personality-mood: 'professional';
+  --personality-energy: 5;
+  --personality-sophistication: 7;
+}
+
+/* Base Layout Classes */
+.grid-layout-default {
+  display: grid;
+  grid-template-columns: var(--layout-columns);
+  grid-template-rows: var(--layout-rows);
+  grid-template-areas: var(--layout-areas);
+  gap: var(--layout-gap);
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+.grid-layout-standard {
+  display: grid;
+  grid-template-columns: var(--dynamic-columns, var(--layout-columns));
+  grid-template-rows: var(--dynamic-rows, var(--layout-rows));
+  grid-template-areas: var(--dynamic-areas, var(--layout-areas));
+  gap: var(--dynamic-gap, var(--layout-gap));
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+.masonry-layout {
+  display: grid;
+  grid-template-columns: var(--dynamic-columns, repeat(auto-fill, minmax(300px, 1fr)));
+  gap: var(--dynamic-gap, 1.5rem);
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+.asymmetric-layout {
+  display: grid;
+  grid-template-columns: var(--dynamic-columns, 1fr 2fr 1fr);
+  grid-template-rows: var(--dynamic-rows, auto 1fr auto);
+  grid-template-areas: var(--dynamic-areas, '"header header sidebar" "main main sidebar" "footer footer footer"');
+  gap: var(--dynamic-gap, 2rem);
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+.flowing-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dynamic-gap, 2rem);
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+.flowing-layout > * {
+  display: grid;
+  grid-template-columns: var(--dynamic-columns, repeat(auto-fit, minmax(280px, 1fr)));
+  gap: var(--dynamic-gap, 1.5rem);
+}
+
+.centered-layout {
+  display: grid;
+  grid-template-columns: var(--dynamic-columns, 1fr min(65ch, 100%) 1fr);
+  grid-template-rows: var(--dynamic-rows, auto 1fr auto);
+  grid-template-areas: var(--dynamic-areas, '"header header header" ". main ." "footer footer footer"');
+  gap: var(--dynamic-gap, 3rem);
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+.split-layout {
+  display: grid;
+  grid-template-columns: var(--dynamic-columns, 1fr 1fr);
+  grid-template-rows: var(--dynamic-rows, auto 1fr auto);
+  grid-template-areas: var(--dynamic-areas, '"header header" "main sidebar" "footer footer"');
+  gap: var(--dynamic-gap, 2rem);
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+/* Dynamic Typography */
+.dynamic-text {
+  font-family: var(--typography-primary), system-ui, sans-serif;
+  font-weight: var(--typography-weight);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.dynamic-text-secondary {
+  font-family: var(--typography-secondary), monospace;
+  color: var(--color-textSecondary);
+}
+
+.dynamic-heading {
+  font-family: var(--typography-primary), system-ui, sans-serif;
+  font-weight: 700;
+  color: var(--color-text);
+  font-size: calc(1rem * var(--typography-scale));
+}
+
+/* Dynamic Components */
+.dynamic-card {
+  background-color: var(--color-surface);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.dynamic-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.dynamic-button {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dynamic-button:hover {
+  background-color: var(--color-secondary);
+  transform: translateY(-2px);
+}
+
+.dynamic-accent {
+  color: var(--color-accent);
+}
+
+.dynamic-surface {
+  background-color: var(--color-surface);
+}
+
+/* Theme-Specific Styles */
+.theme-cyberpunk-matrix {
+  --glow-intensity: 0.8;
+}
+
+.theme-cyberpunk-matrix .dynamic-text {
+  text-shadow: 0 0 10px var(--color-primary);
+}
+
+.theme-cyberpunk-matrix .dynamic-card {
+  border: 1px solid var(--color-primary);
+  box-shadow: 0 0 20px var(--color-primary)20;
+}
+
+.theme-minimal-zen .dynamic-card {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.theme-retro-synthwave {
+  background-image: 
+    linear-gradient(45deg, var(--color-primary)10 25%, transparent 25%), 
+    linear-gradient(-45deg, var(--color-secondary)10 25%, transparent 25%);
+  background-size: 60px 60px;
+}
+
+.theme-retro-synthwave .dynamic-text {
+  text-shadow: 0 0 5px var(--color-accent);
+}
+
+.theme-organic-forest .dynamic-card {
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, var(--color-surface), var(--color-background));
+}
+
+.theme-futuristic-hologram .dynamic-card {
+  background: linear-gradient(135deg, var(--color-surface)80, var(--color-primary)10);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--color-primary)30;
+}
+
+.theme-artistic-watercolor .dynamic-card {
+  background: linear-gradient(135deg, var(--color-surface), var(--color-accent)20);
+  border-radius: 2rem;
+}
+
+.theme-neon-city .dynamic-text {
+  text-shadow: 0 0 8px var(--color-primary);
+}
+
+.theme-neon-city .dynamic-card {
+  border: 2px solid var(--color-accent);
+  box-shadow: 0 0 30px var(--color-accent)30;
+}
+
+.theme-sunset-gradient {
+  background: linear-gradient(135deg, var(--color-background), var(--color-surface));
+}
+
+.theme-monochrome-bold .dynamic-card {
+  border: 3px solid var(--color-text);
+  border-radius: 0;
+}
+
+.theme-ocean-depths .dynamic-card {
+  background: linear-gradient(135deg, var(--color-surface)90, var(--color-primary)20);
+  border-radius: 1rem;
+}
+
+.theme-cosmic-space .dynamic-card {
+  background: linear-gradient(135deg, var(--color-surface), var(--color-primary)15);
+  box-shadow: 0 0 40px var(--color-primary)20;
+}
+
+.theme-dark-professional .dynamic-card {
+  background: linear-gradient(135deg, var(--color-surface), var(--color-background));
+  border: 1px solid var(--color-primary)20;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .grid-layout-standard,
+  .asymmetric-layout,
+  .split-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas: 
+      "header"
+      "main"
+      "sidebar"
+      "footer";
+  }
+  
+  .centered-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "main"
+      "footer";
+    gap: 1.5rem;
+  }
+}
+
+/* Animation Classes */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.8s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.9); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .dynamic-card:hover {
+    transform: none;
+  }
+  
+  .dynamic-button:hover {
+    transform: none;
+  }
+}

@@ -1,0 +1,213 @@
+/**
+ * Media + asset registry.
+ *
+ * Every image, document, and brand file used by the site is listed here so it
+ * can be found, replaced, and audited without searching the whole codebase.
+ *
+ * To replace an asset: drop the new file at the same `projectPath` (or update
+ * the path here and in the components listed under `usedIn`).
+ */
+
+export type MediaCategory = 'portrait' | 'brand' | 'document' | 'evidence'
+
+export type MediaAsset = {
+  slug: string
+  title: string
+  category: MediaCategory
+  /** Public URL used by the running site. */
+  src: string
+  /** Path inside the repository, for finding and editing the source file. */
+  projectPath: string
+  description: string
+  format: string
+  dimensions?: string
+  size?: string
+  usedIn: readonly { label: string; href: string }[]
+  note: string
+}
+
+export const mediaAssets: readonly MediaAsset[] = [
+  {
+    slug: 'portrait-david',
+    title: 'Portrait — David Akpoviroro Oke',
+    category: 'portrait',
+    src: '/media/portraits/david-akpoviroro-oke.jpg',
+    projectPath: 'public/media/portraits/david-akpoviroro-oke.jpg',
+    description:
+      'The primary editorial portrait, licensed for use on this site only. It is not offered as a downloadable asset.',
+    format: 'JPEG',
+    dimensions: '990 × 1280',
+    size: '41 KB',
+    usedIn: [
+      { label: 'Home hero', href: '/' },
+      { label: 'About', href: '/about' },
+    ],
+    note: 'Keep the 4:5 crop. Replace this file with a portrait of the same proportions to update both pages at once. For press requests, use the contact page.',
+  },
+  {
+    slug: 'mr-iridescent-logo',
+    title: 'Mr Iridescent — primary lockup',
+    category: 'brand',
+    src: '/media/brand/mr-iridescent-logo.png',
+    projectPath: 'public/media/brand/mr-iridescent-logo.png',
+    description:
+      'The personal-brand lockup: the MR monogram fused with the infinity mark, the camera-iris figure, and the line “Creative Renaissance Man”.',
+    format: 'PNG',
+    dimensions: '1200 × 704',
+    size: '68 KB',
+    usedIn: [
+      { label: 'About', href: '/about' },
+      { label: 'Share kit', href: '/share' },
+      { label: 'Media library', href: '/media' },
+    ],
+    note: 'The supplied original is kept as mr-iridescent-logo.jpg. Replace the PNG and the JPG together when the lockup changes.',
+  },
+  {
+    slug: 'mr-iridescent-mark',
+    title: 'Mr Iridescent — monogram mark',
+    category: 'brand',
+    src: '/media/brand/mr-iridescent-mark.png',
+    projectPath: 'public/media/brand/mr-iridescent-mark.png',
+    description:
+      'The square MR monogram cropped from the lockup. Used at small sizes in navigation, the footer, and social avatars.',
+    format: 'PNG',
+    dimensions: '512 × 512',
+    size: '22 KB',
+    usedIn: [
+      { label: 'Navigation', href: '/' },
+      { label: 'Footer', href: '/' },
+      { label: 'Home', href: '/' },
+    ],
+    note: 'This is the header/footer mark. Replace this file with a square PNG (512 × 512 recommended, 256 × 256 minimum) and both placements update. It is displayed inside a circular ivory plate at 32 px on mobile, 36 px in the desktop header, and 40 px in the footer. Keep detail inside the central 80% so the circle never clips it. The path is centralized as `brandMark` in lib/profile.ts.',
+  },
+  {
+    slug: 'mr-iridescent-logo-source',
+    title: 'Mr Iridescent — supplied source',
+    category: 'brand',
+    src: '/media/brand/mr-iridescent-logo.jpg',
+    projectPath: 'public/media/brand/mr-iridescent-logo.jpg',
+    description:
+      'The original 400 × 269 JPEG supplied by David, retained unchanged as the archival source for every generated variant.',
+    format: 'JPEG',
+    dimensions: '400 × 269',
+    size: '34 KB',
+    usedIn: [{ label: 'Media library', href: '/media' }],
+    note: 'Do not crop this file in place. Generate new sizes from it so the original stays intact.',
+  },
+  {
+    slug: 'og-card',
+    title: 'Social share card',
+    category: 'brand',
+    src: '/media/brand/og-card.jpg',
+    projectPath: 'public/media/brand/og-card.jpg',
+    description:
+      'The 1200 × 630 Open Graph card used by every page, generated from the portrait and the spectral brand system.',
+    format: 'JPEG',
+    dimensions: '1200 × 630',
+    size: '63 KB',
+    usedIn: [
+      { label: 'Open Graph + Twitter cards', href: '/services' },
+      { label: 'Article schema fallback', href: '/writings' },
+    ],
+    note: 'Regenerate with `npm run generate:assets`, or replace the file directly and keep the 1.91:1 ratio.',
+  },
+  {
+    slug: 'favicon-mark',
+    title: 'Iridescent mark — favicon',
+    category: 'brand',
+    src: '/favicon.svg',
+    projectPath: 'public/favicon.svg',
+    description:
+      'The browser icon, built from the Mr Iridescent MR mark on an ivory rounded plate. The SVG embeds the 512 px artwork so it stays crisp everywhere.',
+    format: 'SVG',
+    dimensions: '512 × 512 embedded',
+    size: '19 KB',
+    usedIn: [{ label: 'Browser tab', href: '/' }],
+    note: 'Generated by `npm run generate:favicon` from public/media/brand/mr-iridescent-mark.png. Do not hand-edit.',
+  },
+  {
+    slug: 'apple-touch-icon',
+    title: 'Apple touch icon',
+    category: 'brand',
+    src: '/apple-touch-icon.png',
+    projectPath: 'public/apple-touch-icon.png',
+    description:
+      '180 × 180 home-screen icon for iOS and iPadOS, generated from the vector mark.',
+    format: 'PNG',
+    dimensions: '180 × 180',
+    size: '6 KB',
+    usedIn: [{ label: 'iOS home screen', href: '/' }],
+    note: 'Generated by `npm run generate:favicon`. Do not hand-edit.',
+  },
+  {
+    slug: 'favicon-ico',
+    title: 'Browser favicon',
+    category: 'brand',
+    src: '/favicon.ico',
+    projectPath: 'public/favicon.ico',
+    description:
+      'Multi-size ICO container (16, 32, 48, 64, 128, and 256 px) for older browsers, feeds, and pinned tabs.',
+    format: 'ICO',
+    dimensions: '16–256 × 16–256',
+    size: '38 KB',
+    usedIn: [{ label: 'Browser tab', href: '/' }],
+    note: 'Generated by `npm run generate:favicon` from the same mark as the PNG icons and web manifest.',
+  },
+  {
+    slug: 'resume-pdf',
+    title: 'Résumé — 2026',
+    category: 'document',
+    src: '/documents/David-Oke-Resume-2026.pdf',
+    projectPath: 'public/documents/David-Oke-Resume-2026.pdf',
+    description:
+      'The print-ready two-page résumé, generated from the same verified profile data as the website.',
+    format: 'PDF',
+    dimensions: 'A4, 2 pages',
+    size: '64 KB',
+    usedIn: [
+      { label: 'Résumé page', href: '/resume' },
+      { label: 'Navigation', href: '/resume' },
+      { label: 'Home hero', href: '/' },
+      { label: 'About', href: '/about' },
+    ],
+    note: 'Generated with `npm run generate:resume`. The output path is defined in scripts/generate-resume.mjs.',
+  },
+]
+
+export const mediaFolders = [
+  {
+    path: 'public/media/portraits/',
+    title: 'Portraits',
+    description: 'Editorial photography of David. Keep a 4:5 ratio for the hero and about page.',
+    contains: 'JPEG / WebP portraits',
+  },
+  {
+    path: 'public/media/brand/',
+    title: 'Brand',
+    description: 'Social cards, marks, textures, and generated brand artwork.',
+    contains: 'OG cards, SVG marks, backgrounds',
+  },
+  {
+    path: 'public/media/orgs/',
+    title: 'Organizations',
+    description:
+      'Official organization marks used beside names and links, with designed monogram fallbacks in lib/organizations.ts. Logos remain the trademarks of their owners and are used for identification only.',
+    contains: 'SVG and WebP marks, wordmarks, monograms',
+  },
+  {
+    path: 'public/media/evidence/',
+    title: 'Evidence',
+    description:
+      'Badge screenshots, event photography, and credential captures. Add the file, then register it in lib/media.ts.',
+    contains: 'Screenshots and credential evidence',
+  },
+  {
+    path: 'public/documents/',
+    title: 'Documents',
+    description: 'Downloadable PDFs such as the résumé. Served from the stable /documents/ URL.',
+    contains: 'PDF documents',
+  },
+] as const
+
+export const mediaByCategory = (category: MediaCategory) =>
+  mediaAssets.filter((asset) => asset.category === category)
