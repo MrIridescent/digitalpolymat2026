@@ -1,0 +1,28 @@
+name: Set primary domain
+
+# One-off maintenance task: make the apex domain the canonical host so it
+# matches NEXT_PUBLIC_SITE_URL, the sitemap, canonical tags, and llms.txt.
+# Netlify keeps www as an alias and redirects it to the primary domain.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  set-primary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Set mriridescent.africa as the primary custom domain
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          set -euo pipefail
+          response=$(curl -sS -X PATCH \
+            -H "Authorization: Bearer $NETLIFY_AUTH_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"custom_domain":"mriridescent.africa"}' \
+            "https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID")
+          echo "$response" | jq '{name, custom_domain, domain_aliases, ssl_url, url}'
