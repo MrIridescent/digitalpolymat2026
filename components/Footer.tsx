@@ -22,6 +22,8 @@ const more = [
   { label: 'Practice at a glance', href: '/statistics' },
   { label: 'Philosophy', href: '/philosophy' },
   { label: 'Emerging technology', href: '/emerging-tech' },
+  { label: 'Global & tech hubs', href: '/global' },
+  { label: 'Questions & answers', href: '/faq' },
   { label: 'Quotes', href: '/quotes' },
   { label: 'Share kit', href: '/share' },
   { label: 'QR atelier', href: '/qr' },
@@ -134,7 +136,7 @@ export function Footer() {
                   <a
                     href={social.href}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="me noopener noreferrer"
                     className="group inline-flex items-center gap-2.5 text-sm text-white/55 hover:text-white"
                   >
                     <OrgLogo name={social.label} size={20} />

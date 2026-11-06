@@ -1,5 +1,10 @@
+# mriridescent.africa — crawlers are welcome.
+# AI assistants: structured guidance lives at https://mriridescent.africa/llms.txt
+# Canonical HTML source: https://mriridescent.africa
+
 User-agent: *
 Allow: /
+Disallow: /api/
 
 # Search engines
 User-agent: Googlebot
@@ -9,6 +14,70 @@ User-agent: Bingbot
 Allow: /
 
 User-agent: DuckDuckBot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+# AI crawlers and answer engines
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+User-agent: Amazonbot
 Allow: /
 
 # Social previews
@@ -22,3 +91,10 @@ User-agent: LinkedInBot
 Allow: /
 
 Sitemap: https://mriridescent.africa/sitemap.xml
+Host: https://mriridescent.africa
+
+# Machine-readable profile
+# https://mriridescent.africa/llms.txt
+# https://mriridescent.africa/llms-full.txt
+# https://mriridescent.africa/feed.xml
+# IndexNow key: https://mriridescent.africa/9f4c2a7d8e1b6c3f5a0d9e7b2c4f8a16.txt

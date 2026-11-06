@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { ContactForm } from '@/components/site/ContactForm'
 import { OrgLogo } from '@/components/site/OrgLogo'
+import { BreadcrumbStructuredData, ContactPageStructuredData } from '@/components/StructuredData'
 import { generateMetaTags, pageMetadata } from '@/lib/seo-config'
 import { site, socials, whatsappLink } from '@/lib/profile'
 
@@ -24,6 +25,13 @@ export const metadata: Metadata = generateMetaTags(
 export default function ContactPage() {
   return (
     <div className="pt-16">
+      <ContactPageStructuredData />
+      <BreadcrumbStructuredData
+        items={[
+          { name: 'Home', path: '/' },
+          { name: 'Contact', path: '/contact' },
+        ]}
+      />
       <section className="aurora grain border-b border-white/10 pb-12 pt-20 sm:pt-24">
         <div className="shell">
           <p className="eyebrow">Contact · open inbox</p>

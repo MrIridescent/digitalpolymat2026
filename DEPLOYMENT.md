@@ -50,6 +50,9 @@ are read by `npm run build`; `RESEND_*` is read by the function at runtime.
 | `CONTACT_TO_EMAIL` | Recommended | `me@mriridescent.africa` |
 | `CONTACT_FROM_EMAIL` | Recommended | `David Akpoviroro Oke <website@hello.i2sltd.click>` (verified sender) |
 | `CONTACT_AUTO_REPLY` | No | `true` by default; `false` disables the visitor acknowledgement |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Optional | Google Search Console HTML-tag token (token only, not the tag) |
+| `NEXT_PUBLIC_BING_SITE_VERIFICATION` | Optional | Bing Webmaster Tools meta-tag token |
+| `INDEXNOW_KEY` | Optional | Public IndexNow key; must match `public/<key>.txt` |
 | `CONTENTFUL_SPACE_ID` | Optional | Enables Contentful journal entries |
 | `CONTENTFUL_ACCESS_TOKEN` | Optional | Delivery API token — published content |
 | `CONTENTFUL_PREVIEW_ACCESS_TOKEN` | Optional | Preview API token — drafts (local/staging only) |
@@ -110,7 +113,39 @@ form once and confirm both messages arrive.
 3. Wait for the certificate, then choose the primary domain. `NEXT_PUBLIC_SITE_URL`
    must match it so canonical URLs, Open Graph tags, and the sitemap stay correct.
 
-## 5. Publishing a journal post
+## 5. Search and AI discovery
+
+The build already emits `sitemap.xml`, `robots.txt`, `llms.txt`,
+`llms-full.txt`, `feed.xml`, and the IndexNow key file. After the domain is live:
+
+1. Add `mriridescent.africa` to [Google Search Console](https://search.google.com/search-console)
+   and [Bing Webmaster Tools](https://www.bing.com/webmasters). DNS
+   verification is preferred; HTML-tag tokens go in the two
+   `NEXT_PUBLIC_*_SITE_VERIFICATION` variables above, followed by a rebuild.
+2. Submit `https://mriridescent.africa/sitemap.xml` in both.
+3. Confirm the live files are plain text or XML, not HTML:
+
+   ```bash
+   curl -sI https://mriridescent.africa/llms.txt
+   curl -sI https://mriridescent.africa/llms-full.txt
+   curl -sI https://mriridescent.africa/feed.xml
+   ```
+
+4. Notify IndexNow (Bing, Yandex, Seznam, Naver, Yep):
+
+   ```bash
+   npm run seo:indexnow -- --dry-run
+   npm run seo:indexnow
+   ```
+
+5. Request indexing in Search Console for `/`, `/global`, `/faq`, `/about`,
+   `/services`, `/projects`, and each new journal post.
+
+The full checklist — profiles, directories, tech-hub participation, content
+cadence, measurement, and guardrails — is in [SEO.md](SEO.md). Do not buy
+links or publish thin city pages; the `/global` page covers geography honestly.
+
+## 6. Publishing a journal post
 
 ```bash
 npm run blog:setup      # first time only: create the blogPost content type
@@ -126,7 +161,7 @@ time, so without a rebuild the published entry will not appear on the live site.
 `--no-rebuild` publishes without calling the hook. You can always trigger a deploy
 manually from **Netlify → Deploys → Trigger deploy**.
 
-## 6. CI/CD pipeline
+## 7. CI/CD pipeline
 
 Two GitHub Actions workflows live in `.github/workflows`:
 
@@ -158,7 +193,7 @@ Then run **Actions → Deploy to Netlify → Run workflow**. Site variables such
 build reports `Cannot find module 'autoprefixer'`, confirm that flag is still
 present in the Netlify environment.
 
-## 7. Local verification before deploying
+## 8. Local verification before deploying
 
 ```bash
 npm run type-check
@@ -170,7 +205,7 @@ Open [http://localhost:4173](http://localhost:4173). The preview server mimics
 Netlify clean URLs, but `/api/contact` only runs on Netlify (or with
 `netlify dev`).
 
-## 8. Troubleshooting
+## 9. Troubleshooting
 
 | Symptom | Check |
 | --- | --- |
@@ -181,4 +216,7 @@ Netlify clean URLs, but `/api/contact` only runs on Netlify (or with
 | Contact returns 503 | `RESEND_API_KEY` is missing in Netlify |
 | Contact returns 502 | Resend rejected the request; verify the sending domain and `CONTACT_FROM_EMAIL` |
 | New post not live | The build hook did not run; redeploy from the Netlify dashboard |
+| `/llms.txt` returns HTML | The dotted route did not export; confirm `out/llms.txt` exists, or fall back to a static file in `public/` |
+| Sitemap is missing a route | Add it to `app/sitemap.ts` and rebuild; Contentful posts are included automatically |
+| IndexNow returns 403 | The key file is not live or `INDEXNOW_KEY` does not match `public/<key>.txt` |
 | Deep link returns 404 | Confirm `publish = "out"` and the `/api/contact` redirect in `netlify.toml` |

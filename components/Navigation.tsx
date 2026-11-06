@@ -30,6 +30,8 @@ const secondary = [
   { name: 'Practice at a glance', href: '/statistics' },
   { name: 'Philosophy', href: '/philosophy' },
   { name: 'Emerging technology', href: '/emerging-tech' },
+  { name: 'Global practice', href: '/global' },
+  { name: 'Questions & answers', href: '/faq' },
   { name: 'Résumé', href: '/resume' },
   { name: 'Share kit', href: '/share' },
   { name: 'QR atelier', href: '/qr' },

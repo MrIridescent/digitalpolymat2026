@@ -1,11 +1,16 @@
 {
   "name": "David Akpoviroro Oke — Mr Iridescent",
   "short_name": "Mr Iridescent",
-  "description": "David Akpoviroro Oke, Mr Iridescent — Digital Product Delivery Architect, systems engineer, and Creative Renaissance Man.",
+  "description": "Growth hacker, growth partner, PR and reputation strategist, and digital product delivery architect in Lagos, working worldwide.",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#08090c",
   "theme_color": "#08090c",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "portfolio"],
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -18,6 +23,23 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Services",
+      "url": "/services",
+      "description": "Growth, PR, product delivery, and security offers"
+    },
+    {
+      "name": "Projects",
+      "url": "/projects",
+      "description": "Public repositories and selected builds"
+    },
+    {
+      "name": "Contact",
+      "url": "/contact",
+      "description": "Start a conversation"
     }
   ]
 }

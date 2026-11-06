@@ -16,13 +16,27 @@ const socialMap = {
   medium: 'https://medium.com/@iammriridescent',
   instagram: 'https://instagram.com/mriridescent',
   facebook: 'https://facebook.com/iammriridescent',
+  linktree: 'https://linktr.ee/mriridescent_',
+  threads: 'https://www.threads.com/@mriridescent',
+}
+
+/** Bump this when the durable page copy changes; sitemap and AI files use it. */
+export const CONTENT_UPDATED = '2026-11-06'
+
+/** A meta description short enough for search results. */
+export const seoDescription =
+  'David Akpoviroro Oke (Mr Iridescent) — Lagos-based growth hacker, PR and reputation strategist, and digital product delivery architect.'
+
+/** Absolute origin, with any trailing slash removed. */
+export function siteOrigin() {
+  return site.url.replace(/\/+$/, '')
 }
 
 export const seoConfig = {
   name: site.name,
-  title: `${site.name} — Growth Hacker, Digital Product Delivery Architect & Creative Renaissance Man`,
-  description: site.description,
-  url: site.url,
+  title: `${site.name} — Growth Hacker & Product Architect`,
+  description: seoDescription,
+  url: siteOrigin(),
   image: '/media/brand/og-card.jpg',
 
   social: socialMap,
@@ -46,34 +60,44 @@ export const seoConfig = {
     'David Akpoviroro Oke',
     'Mr Iridescent',
     'Creative Renaissance Man',
+    'growth hacker',
     'growth hacker Lagos',
     'growth partner for brands',
+    'growth partner for founders',
     'market entry strategist Nigeria',
+    'market entry Africa',
     'public relations strategist Lagos',
+    'tech PR Lagos',
     'reputation management Africa',
+    'online reputation management Nigeria',
     'crisis communications Nigeria',
     'creative director Lagos',
     'video editor Nigeria',
     'content strategist Africa',
     'brand narrative strategist',
     'digital product delivery architect',
+    'digital product architect Africa',
+    'fractional CTO Lagos',
     'software engineer Lagos',
     'full stack developer Nigeria',
-    'AI engineer',
-    'cybersecurity engineer',
-    'purple team security',
-    'cyber-physical systems',
-    'OT ICS security',
-    'DevSecOps',
-    'Next.js developer',
+    'Next.js developer Africa',
     'TypeScript developer',
     'Python developer',
     'Rust developer',
-    'Java developer',
-    'remote software engineer',
-    'growth partner for brands',
+    'AI engineer Nigeria',
+    'agentic AI consultant',
+    'cybersecurity engineer',
+    'purple team security',
+    'DevSecOps consultant Africa',
+    'cyber-physical systems',
+    'OT ICS security',
     'workflow automation Nigeria',
     'custom software development Lagos',
+    'remote software engineer',
+    'remote growth partner',
+    'tech hubs',
+    'Lagos tech ecosystem',
+    'African tech talent',
     'Iridescent Internet Solutions',
     'civic technology Nigeria',
     'ROADvision Lagos',
@@ -82,6 +106,11 @@ export const seoConfig = {
     'green software',
     'SDG 13 climate action',
     'African Union Agenda 2063',
+    'growth hacker London',
+    'growth partner Berlin',
+    'growth partner Nairobi',
+    'product architect Dubai',
+    'startup growth partner Singapore',
   ],
 
   structuredData: {
@@ -104,6 +133,31 @@ export const seoConfig = {
       'Founder',
     ],
     email: site.email,
+    telephone: site.phone,
+    identifier: {
+      '@type': 'PropertyValue',
+      propertyID: 'ORCID',
+      value: '0000-0002-6340-2782',
+    },
+    hasOccupation: {
+      '@type': 'Occupation',
+      name: 'Growth hacker, PR and reputation strategist, digital product delivery architect',
+      occupationLocation: {
+        '@type': 'City',
+        name: 'Lagos, Nigeria',
+      },
+      skills:
+        'Growth strategy, market entry, public relations, reputation management, crisis communications, product architecture, full-stack engineering, applied AI, cybersecurity, creative direction',
+    },
+    homeLocation: {
+      '@type': 'Place',
+      name: 'Lagos, Nigeria',
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: 6.5244,
+        longitude: 3.3792,
+      },
+    },
     worksFor: currentRoles.map((role) => ({
       '@type': 'Organization',
       name: role.org,
@@ -200,7 +254,8 @@ export const seoConfig = {
     sameAs: Object.values(socialMap).filter((value) => value.startsWith('http')),
     mainEntityOfPage: {
       '@type': 'ProfilePage',
-      '@id': site.url,
+      '@id': `${site.url}/about#profile`,
+      url: `${site.url}/about`,
     },
   },
 }
@@ -218,24 +273,33 @@ export function generateMetaTags(
   const title = pageTitle
     ? `${pageTitle} — ${site.name}`
     : seoConfig.title
-  const description = pageDescription || site.description
+  const description = pageDescription || seoDescription
   const keywords = pageKeywords
     ? [...pageKeywords, ...seoConfig.keywords]
     : seoConfig.keywords
-  const ogImage = `${site.url}/media/brand/og-card.jpg`
-  const canonicalUrl = new URL(path, site.url).toString()
+  const ogImage = `${siteOrigin()}/media/brand/og-card.jpg`
+  const canonicalUrl = new URL(path, `${siteOrigin()}/`).toString()
+  const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim()
+  const bingVerification = process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION?.trim()
 
   return {
     title,
     description,
     keywords: keywords.join(', '),
-    metadataBase: new URL(site.url),
-    authors: [{ name: site.name, url: site.url }],
+    metadataBase: new URL(siteOrigin()),
+    authors: [{ name: site.name, url: siteOrigin() }],
     creator: site.name,
     publisher: site.name,
     category: 'technology',
     alternates: {
       canonical: path,
+      types: {
+        'application/rss+xml': '/feed.xml',
+      },
+    },
+    verification: {
+      ...(googleVerification ? { google: googleVerification } : {}),
+      ...(bingVerification ? { other: { 'msvalidate.01': bingVerification } } : {}),
     },
     openGraph: {
       title,
@@ -257,7 +321,12 @@ export function generateMetaTags(
       card: 'summary_large_image',
       title,
       description,
-      images: [ogImage],
+      images: [
+        {
+          url: ogImage,
+          alt: `${site.name}, ${site.alias} — ${site.persona}`,
+        },
+      ],
       creator: '@mriridescent_',
       site: '@mriridescent_',
     },
@@ -288,6 +357,8 @@ export function generateMetaTags(
       'format-detection': 'telephone=no',
       'geo.region': 'NG-LA',
       'geo.placename': 'Lagos, Nigeria',
+      'geo.position': '6.5244;3.3792',
+      ICBM: '6.5244, 3.3792',
     },
   }
 }
@@ -296,57 +367,57 @@ export const pageMetadata = {
   about: {
     title: 'About',
     description:
-      'The story behind Mr Iridescent: a growth hacker and growth partner with an engineer’s mind and a director’s eye — code, campaigns, reputation, film, art, civic infrastructure, and a security-first approach.',
+      'The story behind Mr Iridescent — a growth hacker, growth partner, and product architect with an engineer’s mind and a director’s eye.',
   },
   growth: {
     title: 'Growth hacking, PR & reputation',
     description:
-      'Growth hacking and market entry, public relations and reputation management, and a content studio led by David Akpoviroro Oke — helping individuals, brands, and companies enter new networks and become impossible to misread.',
+      'Growth hacking, market entry, PR, and reputation management — helping individuals, brands, and companies enter new networks and become impossible to misread.',
   },
   services: {
     title: 'Services',
     description:
-      'Growth hacking and market entry, public relations and reputation management, content and creative direction, digital product delivery architecture, custom software, workflow automation, security engineering, and brand systems with David Akpoviroro Oke.',
+      'Growth hacking, PR and reputation, content, digital product delivery, custom software, automation, security engineering, and brand systems.',
   },
   fractionalCto: {
     title: 'Fractional CTO & systems partner',
     description:
-      'Fractional CTO and strategic systems partnership for founders, SMEs, enterprises, and public institutions: architecture audits, 30-60-90 day roadmaps, build-versus-buy decisions, and targeted microservices.',
+      'Fractional CTO and systems partnership for founders, SMEs, and public institutions: architecture audits, 30-60-90 roadmaps, and build-versus-buy calls.',
   },
   credentials: {
     title: 'Credentials & verified badges',
     description:
-      'Six verified Cisco Networking Academy badges, professional training beyond Cisco, four institutions of study, and six honestly levelled languages — split into focused pages you can check at the source.',
+      'Six verified Cisco badges, training beyond Cisco, four institutions of study, and six honestly levelled languages — check every claim at the source.',
   },
   credentialsCisco: {
     title: 'Verified Cisco badges',
     description:
-      'All six verified Cisco Networking Academy records held by David Akpoviroro Oke — five credentials plus the CSS Essentials course badge: CyberOps, Ethical Hacking, Network Defense, Cyber Threat Management, Endpoint Security, and CSS Essentials.',
+      'All six verified Cisco Networking Academy records: CyberOps, Ethical Hacking, Network Defense, Cyber Threat Management, Endpoint Security, and CSS Essentials.',
   },
   credentialsTraining: {
     title: 'Other professional training',
     description:
-      'CompTIA A+ and Network+ at New Horizons, Afrihub GDLI diplomas in web development, Python, design and CyberOps, AWS Educate, and early desktop publishing at N.I.I.T — the training beyond Cisco.',
+      'CompTIA A+ and Network+ at New Horizons, Afrihub diplomas in web development, Python, design and CyberOps, AWS Educate, and early N.I.I.T training.',
   },
   credentialsEducation: {
     title: 'Schooling & languages',
     description:
-      'Yabatech urban and regional planning, Les Cours Sonou business and human resources, University of the People computer science, and the six languages David Akpoviroro Oke works in.',
+      'Yabatech urban planning, Les Cours Sonou business and HR, University of the People computer science, and the six languages he works in.',
   },
   manifesto: {
     title: 'Renaissance manifesto',
     description:
-      'The systems-architecture manifesto and Letter of Capability of David Akpoviroro Oke — digital polymath, computational civic strategist, and Creative Renaissance Man.',
+      'The systems-architecture manifesto and Letter of Capability of David Akpoviroro Oke — digital polymath and Creative Renaissance Man.',
   },
   advocacy: {
     title: 'Green software & Agenda 2063',
     description:
-      'David Akpoviroro Oke’s commitment to Green Software, the UN Sustainable Development Goals — especially SDG 13 climate action — and the African Union’s Agenda 2063.',
+      'Green Software, the UN Sustainable Development Goals — especially SDG 13 climate action — and the African Union’s Agenda 2063.',
   },
   media: {
-    title: 'Media library & branded service cards',
+    title: 'Media library & service cards',
     description:
-      'Download branded service cards and brand files, or find the portraits, documents, and media used across the site. Every service card carries mriridescent.africa, “Boundless Creativity Unleashed”, and WhatsApp contact details.',
+      'Download branded service cards and brand files, plus the portraits, documents, and media used across the site.',
   },
   projects: {
     title: 'Projects',
@@ -356,7 +427,7 @@ export const pageMetadata = {
   caseStudies: {
     title: 'Case studies',
     description:
-      'A closer look at real engineering work: DevSecOps automation, multi-agent threat detection, and AI infrastructure for Nigerian roads. Every repository is one David Akpoviroro Oke created.',
+      'A closer look at real engineering: DevSecOps automation, multi-agent threat detection, and AI infrastructure for Nigerian roads.',
   },
   resume: {
     title: 'Résumé',
@@ -366,7 +437,17 @@ export const pageMetadata = {
   contact: {
     title: 'Contact',
     description:
-      'Start a conversation with David Akpoviroro Oke about growth, public relations and reputation, content and film, software engineering, AI, security, or consulting. Email me@mriridescent.africa.',
+      'Start a conversation about growth, PR and reputation, content and film, software, AI, security, or consulting. Email me@mriridescent.africa.',
+  },
+  global: {
+    title: 'Global practice & tech hubs',
+    description:
+      'A remote-first Lagos practice working across 100+ tech hubs in six regions — collaboration corridors, overlap windows, and no implied offices.',
+  },
+  faq: {
+    title: 'Questions & answers',
+    description:
+      'Direct answers about David Akpoviroro Oke: who he is, what he does, where he works, languages, credentials, availability, and how to start a conversation.',
   },
   statistics: {
     title: 'Practice at a glance',
@@ -391,21 +472,21 @@ export const pageMetadata = {
   emergingTech: {
     title: 'Emerging technology',
     description:
-      'The technologies David Akpoviroro Oke is building with: agentic AI, security engineering, computer vision for civic infrastructure, developer foundations, and cultural platforms.',
+      'The technologies behind the work: agentic AI, security engineering, computer vision for civic infrastructure, developer tools, and cultural platforms.',
   },
   quotes: {
     title: 'Quotes',
     description:
-      'A collection of ideas that shape the work and the way it is made.',
+      'A collection of ideas that shape the work and the way it is made — on craft, systems, growth, security, and the polymathic life.',
   },
   share: {
     title: 'Share kit & service cards',
     description:
-      'Download a shareable service card for any offer, or use intent-based templates to recommend David Akpoviroro Oke — hiring, referrals, build partnerships, collaboration, speaking, and press.',
+      'Download a service card for any offer, or use intent-based templates to recommend David Akpoviroro Oke — hiring, referrals, partnerships, speaking, and press.',
   },
   qrAtelier: {
     title: 'QR atelier — every door, its own code',
     description:
-      'Twenty real destinations, six art-directed QR editions. Download branded QR posters as 1080 px PNGs or vector SVGs for print, each opening a specific page with campaign tracking.',
+      'Twenty destinations, six art-directed QR editions. Download branded posters as PNGs or vector SVGs for print, each with campaign tracking.',
   },
 }

@@ -13,7 +13,7 @@ import {
   PersonStructuredData,
   WebsiteStructuredData,
   OrganizationStructuredData,
-  FAQStructuredData,
+  ProfessionalServiceStructuredData,
 } from '@/components/StructuredData'
 import { DynamicLayoutSystem } from '@/components/DynamicLayoutSystem'
 import { SmoothScroll } from '@/components/motion/SmoothScroll'
@@ -71,7 +71,7 @@ export default function RootLayout({
         <PersonStructuredData />
         <WebsiteStructuredData />
         <OrganizationStructuredData />
-        <FAQStructuredData />
+        <ProfessionalServiceStructuredData />
       </head>
       <body className="antialiased" suppressHydrationWarning>
         <a href="#main-content" className="skip-link">

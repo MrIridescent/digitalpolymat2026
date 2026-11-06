@@ -1,13 +1,16 @@
 # David Akpoviroro Oke — Portfolio
 
 The personal site of **David Akpoviroro Oke — Mr Iridescent, the Creative
-Renaissance Man**: a Lagos-based Digital Product Delivery Architect, systems
-engineer, and founder working across product engineering, applied AI, workflow
-automation, cybersecurity, and civic infrastructure.
+Renaissance Man**: a Lagos-based growth hacker and growth partner, public
+relations and reputation strategist, and digital product delivery architect
+working worldwide across growth, content and film, product engineering, applied
+AI, cybersecurity, and civic infrastructure.
 
 Built with Next.js 15 (App Router), TypeScript, Tailwind CSS, GSAP, Lenis, and
 Framer Motion. The site is a fully static export, deployed on Netlify. The
 journal is powered by Contentful at build time, with a local essay fallback.
+Search, AI discovery, and the owner-facing submission playbook live in
+[SEO.md](SEO.md).
 
 ## Pages
 
@@ -25,6 +28,8 @@ journal is powered by Contentful at build time, with a local essay fallback.
 | `/credentials/education` | Institutions of study and honestly levelled languages |
 | `/manifesto` | The Renaissance manifesto, seven Da Vincian principles, and Letter of Capability |
 | `/advocacy` | Green Software, the SDGs, climate action, and African Union Agenda 2063 |
+| `/global` | 100+ tech hubs and collaboration corridors, remote-first from Lagos |
+| `/faq` | Direct answers about the practice, availability, credentials, and borders |
 | `/media` | Discoverable registry of every portrait, brand file, document, and evidence path |
 | `/resume` | Web résumé with a print/download PDF |
 | `/contact` | WhatsApp-first contact details and a server-delivered enquiry form |
@@ -65,15 +70,21 @@ app/                    Routes, layout, metadata, global styles
   credentials/          Training, schooling, and verification
   manifesto/            Renaissance manifesto and Letter of Capability
   advocacy/             Green Software, SDGs, Agenda 2063
+  global/               Tech hubs, collaboration corridors, remote practice
+  faq/                  Direct answers and source-of-record panel
   media/                Asset registry UI
   resume/               Web résumé
   share/                Referral and share kit
   qr/                   QR atelier: destinations and poster editions
+  llms.txt/             Route handler: compact AI and answer-engine profile
+  llms-full.txt/        Route handler: long-form structured profile
+  feed.xml/             RSS 2.0 feed generated from the journal
+  sitemap.ts            Build-time sitemap, including Contentful posts
   ...
 components/
   Navigation.tsx        Floating editorial navigation
   Footer.tsx            Site footer with acid marquee and oversized wordmark
-  StructuredData.tsx    JSON-LD (Person, WebSite, Organization, FAQ, Service)
+  StructuredData.tsx    JSON-LD (Person, Organization, WebSite, ProfessionalService, FAQ, Service, ItemList, BlogPosting, breadcrumbs)
   DynamicLayoutSystem   Page shell (nav + main + footer)
   kinetic/              Kinetic primitives: marquee, split lines, magnetic, rail carousel, scroll words, animated icons, editorial frame
   blog/                 Rich-text renderer, generated covers, journal filter, share row
@@ -90,7 +101,9 @@ lib/
   quotes.ts             Quote library and category order
   quote-passage.ts      Route-to-category map and deterministic page quote selection
   share.ts              Share intents, channels, and tracked-link helpers
-  seo-config.ts         Metadata and canonical URL helpers
+  global.ts             Tech-hub regions, collaboration corridors, remote steps
+  faq.ts                Visible FAQ answers shared with FAQPage markup
+  seo-config.ts         Metadata, canonical URL helpers, and discovery dates
 netlify/
   functions/contact.js  Server-side enquiry delivery (Resend or SMTP)
 public/
@@ -102,6 +115,8 @@ public/
     blog/               Journal cover photographs (CC0, credited in media/README.md)
   documents/            Downloadable résumé PDF
   favicon.svg/.ico      Favicon set and browser icons
+  robots.txt            Crawler rules, sitemap, AI allowlist
+  9f4c2a7d...txt        IndexNow ownership key (public by design)
   site.webmanifest      Web app manifest
 styles/
   kinetic.css           Kinetic editorial layer (type, marquee, carousel, motion)
@@ -113,6 +128,7 @@ scripts/
   generate-brand-assets.mjs   Regenerates the OG social card
   generate-resume.mjs         Regenerates the résumé PDF
   contentful-publish.mjs      Creates/updates and publishes journal entries via the CMA
+  seo-indexnow.mjs            Submits the deployed sitemap to IndexNow
   preview-server.cjs          Local server that mimics Netlify clean URLs
 contentful/
   post-template.json          Copy to post.json, edit, then run blog:publish
@@ -162,13 +178,16 @@ Edit the facts in one place:
 - **Identity, languages, roles, services, experience, training, advocacy:** `lib/profile.ts`
 - **Projects and case studies:** `lib/projects.ts`
 - **Media and asset paths:** `lib/media.ts`
+- **Tech hubs and collaboration corridors:** `lib/global.ts`
+- **FAQ answers (page + JSON-LD):** `lib/faq.ts`
 - **Quotes:** `lib/quotes.ts`
 - **Page metadata and canonical URLs:** `lib/seo-config.ts`
 
 When adding or removing a route, update `app/sitemap.ts` and the navigation in
 `components/Navigation.tsx` and `components/Footer.tsx` as well. The sitemap is
 generated at build time from `app/sitemap.ts`, so Contentful articles are
-included automatically.
+included automatically. Bump `CONTENT_UPDATED` in `lib/seo-config.ts` when the
+profile changes; the sitemap, AI files, and `ProfilePage` date follow.
 
 ## Journal (Contentful)
 
@@ -365,6 +384,40 @@ Telegram, and Facebook intent URLs everywhere else. Shared links include
 `?via=<intent>` plus UTM parameters, so the landing page can show a relevant
 referral banner.
 
+## Search and AI discovery
+
+The build emits a complete discovery layer:
+
+| File | Purpose |
+| --- | --- |
+| `/sitemap.xml` | Every static route plus Contentful posts, with `lastModified` |
+| `/robots.txt` | Allows search engines and named AI crawlers; blocks `/api/` |
+| `/llms.txt` | Compact profile for answer engines, with canonical links |
+| `/llms-full.txt` | Full record: services, experience, credentials, projects, hubs, FAQs |
+| `/feed.xml` | RSS 2.0 for the journal, advertised in every document head |
+| `/<indexnow-key>.txt` | IndexNow ownership proof |
+
+Every page carries canonical, Open Graph, Twitter, geo, and RSS metadata plus
+JSON-LD for the person, organisation, site, professional service, and the page
+type. `/writings` is `noindex` and canonicalises to `/blog`.
+
+Optional build-time verification tokens (paste the token, not the meta tag):
+
+```dotenv
+NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=
+NEXT_PUBLIC_BING_SITE_VERIFICATION=
+```
+
+After a production deploy, submit the sitemap to IndexNow:
+
+```bash
+npm run seo:indexnow -- --dry-run
+npm run seo:indexnow
+```
+
+The full owner checklist — Search Console, Bing, AI engines, directories, tech
+hubs, content cadence, measurement, and guardrails — is in [SEO.md](SEO.md).
+
 ## Quality checks
 
 ```bash
@@ -374,8 +427,8 @@ npm run analyze      # Bundle analysis (ANALYZE=true build)
 ```
 
 The site ships with canonical URLs, Open Graph and Twitter metadata, JSON-LD,
-a sitemap, robots rules, security headers, a custom 404, and reduced-motion
-support.
+a build-time sitemap, robots rules, `llms.txt` and `llms-full.txt`, an RSS feed,
+IndexNow support, security headers, a custom 404, and reduced-motion support.
 
 ## Contact
 

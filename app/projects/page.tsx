@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import { ProjectExplorer } from '@/components/site/ProjectExplorer'
+import { BreadcrumbStructuredData, ProjectsStructuredData } from '@/components/StructuredData'
 import { generateMetaTags, pageMetadata } from '@/lib/seo-config'
 import { projectCount } from '@/lib/projects'
 
@@ -15,6 +16,13 @@ export const metadata: Metadata = generateMetaTags(
 export default function ProjectsPage() {
   return (
     <div className="pt-16">
+      <ProjectsStructuredData />
+      <BreadcrumbStructuredData
+        items={[
+          { name: 'Home', path: '/' },
+          { name: 'Projects', path: '/projects' },
+        ]}
+      />
       <section className="aurora grain border-b border-white/10 pb-12 pt-20 sm:pt-24">
         <div className="shell">
           <p className="eyebrow">Projects · a public record</p>

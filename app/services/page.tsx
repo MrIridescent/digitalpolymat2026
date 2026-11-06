@@ -15,7 +15,7 @@ import { SectionHeading } from '@/components/site/SectionHeading'
 import { ServiceCard } from '@/components/site/ServiceCard'
 import { LanguagePanel } from '@/components/site/LanguagePanel'
 import { Reveal } from '@/components/motion/Reveal'
-import { ServiceStructuredData } from '@/components/StructuredData'
+import { BreadcrumbStructuredData, ServiceStructuredData } from '@/components/StructuredData'
 import { generateMetaTags, pageMetadata } from '@/lib/seo-config'
 import { services, site, whatsappLink } from '@/lib/profile'
 
@@ -104,6 +104,12 @@ export default function ServicesPage() {
   return (
     <div className="pt-16">
       <ServiceStructuredData />
+      <BreadcrumbStructuredData
+        items={[
+          { name: 'Home', path: '/' },
+          { name: 'Services', path: '/services' },
+        ]}
+      />
 
       <section className="aurora grain relative overflow-hidden border-b border-white/10 pb-16 pt-20 sm:pt-24" data-parallax-scope>
         <div className="grid-lines pointer-events-none absolute inset-0 opacity-40" aria-hidden="true" />

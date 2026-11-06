@@ -15,6 +15,7 @@ const baseMeta = generateMetaTags(
 export const metadata: Metadata = {
   ...baseMeta,
   alternates: { canonical: '/blog' },
+  robots: { index: false, follow: true },
 }
 
 export default async function WritingsPage() {

@@ -5,6 +5,7 @@ import { ArrowUpRight, Mail, MapPin, MessageCircle } from 'lucide-react'
 import { ButtonLink } from '@/components/site/ButtonLink'
 import { OrgLogo } from '@/components/site/OrgLogo'
 import { SectionHeading } from '@/components/site/SectionHeading'
+import { BreadcrumbStructuredData, ProfilePageStructuredData } from '@/components/StructuredData'
 import { generateMetaTags, pageMetadata } from '@/lib/seo-config'
 import {
   credentials,
@@ -29,6 +30,13 @@ export const metadata: Metadata = generateMetaTags(
 export default function AboutPage() {
   return (
     <div className="pt-16">
+      <ProfilePageStructuredData />
+      <BreadcrumbStructuredData
+        items={[
+          { name: 'Home', path: '/' },
+          { name: 'About', path: '/about' },
+        ]}
+      />
       <section className="aurora grain border-b border-white/10 pb-16 pt-20 sm:pt-24">
         <div className="shell grid items-start gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
           <div>

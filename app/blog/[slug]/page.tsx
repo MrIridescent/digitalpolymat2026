@@ -95,25 +95,40 @@ export default async function BlogPostPage({ params }: PageProps) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
+    '@id': `${articleUrl}#article`,
     headline: post.title,
     description: post.excerpt,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt ?? post.publishedAt,
     keywords: post.tags.join(', '),
+    articleSection: post.tags[0],
+    inLanguage: 'en',
     url: articleUrl,
     mainEntityOfPage: { '@type': 'WebPage', '@id': articleUrl },
+    isPartOf: {
+      '@type': 'Blog',
+      '@id': `${site.url}/blog#blog`,
+      name: 'The Journal',
+      url: `${site.url}/blog`,
+    },
     image: post.cover
       ? [absoluteUrl(post.cover.url)]
       : [`${site.url}/media/brand/og-card.jpg`],
     author: {
       '@type': 'Person',
+      '@id': `${site.url}/#person`,
       name: site.name,
       alternateName: site.alias,
       url: site.url,
     },
     publisher: {
       '@type': 'Organization',
+      '@id': `${site.url}/#organization`,
       name: 'Iridescent Internet Solutions Limited',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${site.url}/media/brand/mr-iridescent-mark.png`,
+      },
     },
   }
 

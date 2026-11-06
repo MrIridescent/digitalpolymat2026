@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { getPosts, postHref } from '@/lib/contentful'
 import { site } from '@/lib/profile'
+import { CONTENT_UPDATED } from '@/lib/seo-config'
 
 /**
  * Generated at build time so Contentful posts enter the sitemap without a
@@ -36,6 +37,8 @@ const routes: Route[] = [
   { path: '/statistics', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/emerging-tech', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/philosophy', changeFrequency: 'monthly', priority: 0.7 },
+  { path: '/global', changeFrequency: 'monthly', priority: 0.8 },
+  { path: '/faq', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/share', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/qr', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/media', changeFrequency: 'monthly', priority: 0.5 },
@@ -51,6 +54,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const pages: MetadataRoute.Sitemap = routes.map((route) => ({
     url: absolute(route.path),
+    lastModified: new Date(CONTENT_UPDATED),
     changeFrequency: route.changeFrequency,
     priority: route.priority,
   }))
