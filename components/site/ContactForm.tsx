@@ -79,8 +79,7 @@ export function ContactForm() {
 
       if (!response.ok || result.ok !== true) {
         throw new Error(
-          result.message ||
-            'The message could not be sent right now. Email me@mriridescent.africa or use WhatsApp.'
+          result.message || 'The message could not be sent right now. Reach me directly instead.'
         )
       }
 
@@ -91,7 +90,7 @@ export function ContactForm() {
       setError(
         submissionError instanceof Error
           ? submissionError.message
-          : 'The message could not be sent right now. Email me@mriridescent.africa or use WhatsApp.'
+          : 'The message could not be sent right now. Reach me directly instead.'
       )
       setStatus('error')
     }

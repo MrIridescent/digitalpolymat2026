@@ -280,8 +280,7 @@ exports.handler = async (event) => {
   if (!resendKey && !smtpReady) {
     return json(503, {
       ok: false,
-      message:
-        'Email delivery is not configured yet. Please email me@mriridescent.africa or use WhatsApp.',
+      message: 'Email delivery is not configured yet. Reach me directly instead.',
     })
   }
 
@@ -318,8 +317,7 @@ exports.handler = async (event) => {
     console.error('Contact delivery failed:', error)
     return json(502, {
       ok: false,
-      message:
-        'The message could not be delivered right now. Please try WhatsApp and I will pick it up there.',
+      message: 'Delivery failed on my side. Reach me directly instead.',
     })
   }
 }
