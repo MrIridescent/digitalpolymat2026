@@ -1,0 +1,39 @@
+name: Set primary domain
+
+# Make the apex domain the canonical host so it matches NEXT_PUBLIC_SITE_URL,
+# the sitemap, canonical tags, and llms.txt. Netlify keeps www as an alias.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  set-primary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Set mriridescent.africa as the primary custom domain
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          set -euo pipefail
+          api="https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID"
+
+          echo "Before:"
+          before=$(curl -sS -H "Authorization: Bearer $NETLIFY_AUTH_TOKEN" "$api")
+          echo "$before" | jq '{custom_domain, domain_aliases, ssl_url, url}'
+
+          aliases=$(echo "$before" | jq -c '[.domain_aliases[]?] + ["www.mriridescent.africa"] | unique | map(select(. != "mriridescent.africa"))')
+          payload=$(jq -n --arg domain "mriridescent.africa" --argjson aliases "$aliases" '{custom_domain: $domain, domain_aliases: $aliases}')
+
+          echo "Patching primary domain to mriridescent.africa…"
+          after=$(curl -sS -X PATCH \
+            -H "Authorization: Bearer $NETLIFY_AUTH_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$payload" \
+            "$api")
+
+          echo "After:"
+          echo "$after" | jq '{custom_domain, domain_aliases, ssl_url, url}'
