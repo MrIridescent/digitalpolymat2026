@@ -1,0 +1,49 @@
+name: Deploy to Netlify
+
+# Manual fallback for when Netlify's Git integration is unavailable or a
+# deploy must be run from CI. Configure these repository secrets first:
+#   NETLIFY_AUTH_TOKEN  — Netlify personal access token
+#   NETLIFY_SITE_ID     — API ID of the target Netlify site
+#
+# Site environment variables (RESEND_API_KEY, CONTACT_*, CONTENTFUL_*) are read
+# by Netlify at build and function runtime; they are not set by this workflow.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-netlify
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and deploy
+        run: >-
+          npx --yes netlify-cli@latest deploy
+          --build
+          --prod
+          --site "$NETLIFY_SITE_ID"
+          --message "GitHub Actions ${GITHUB_SHA::7}"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NEXT_TELEMETRY_DISABLED: "1"

@@ -103,6 +103,9 @@ public/
   site.webmanifest      Web app manifest
 styles/
   kinetic.css           Kinetic editorial layer (type, marquee, carousel, motion)
+.github/workflows/
+  ci.yml                      Type-check and static build on every push and pull request
+  deploy-netlify.yml          Manual Netlify CLI deploy (requires repository secrets)
 scripts/
   generate-favicon.mjs        Regenerates the favicon set and manifest
   generate-brand-assets.mjs   Regenerates the OG social card
@@ -325,8 +328,10 @@ in [DEPLOYMENT.md](DEPLOYMENT.md).
 - Functions directory: `netlify/functions` (esbuild bundler)
 - Redirect: `/api/contact` → `/.netlify/functions/contact`
 
-Netlify's Git integration builds every push to `main`. No GitHub deploy workflow
-is required.
+Netlify's Git integration builds every push to `main`. GitHub Actions runs
+`npm ci`, `npm run type-check`, and `npm run build` on every push and pull
+request so a clean Netlify checkout cannot fail silently. A manual
+`deploy-netlify.yml` workflow is available when a CLI deploy is needed.
 
 ### Contact delivery
 

@@ -5,8 +5,11 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  NODE_ENV = "production"
   NEXT_TELEMETRY_DISABLED = "1"
+  # Next builds need the devDependencies (Tailwind, PostCSS, autoprefixer,
+  # TypeScript). Keep them installed even if the build image sets
+  # NODE_ENV=production.
+  NPM_FLAGS = "--include=dev"
 
 [functions]
   directory = "netlify/functions"

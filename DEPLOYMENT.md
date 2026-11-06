@@ -14,7 +14,29 @@ publish directory, Node version, function bundler, redirects, and headers.
    - **Node version:** 20
 4. Deploy. The first build renders every route, including journal articles.
 
-No GitHub deploy workflow is used. Netlify builds on every push to `main`.
+Netlify's Git integration is the primary deploy path: every push to `main`
+starts a production build. GitHub Actions runs the same install, type-check, and
+build first so a broken commit is caught before or immediately after the push.
+A manual Netlify deploy workflow is also available as a fallback.
+
+Do **not** install `@netlify/plugin-nextjs`. This project is a static export
+(`output: 'export'`), so Netlify only needs the files in `out/` and the single
+function directory declared in `netlify.toml`.
+
+### Moving to a new Netlify account
+
+The current site is out of credits. To move:
+
+1. Import this repository into the new Netlify account.
+2. Keep the build settings from `netlify.toml`.
+3. Recreate the environment variables in section 2.
+4. Add the custom domain in the new site and update DNS.
+5. If you used a build hook, create a new one and update
+   `BLOG_REBUILD_WEBHOOK_URL` in `.env.local`.
+
+Nothing in the repository is tied to the old account. For the optional Actions
+deploy path, replace the `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` repository
+secrets with the new site's values.
 
 ## 2. Environment variables
 
@@ -48,8 +70,10 @@ The contact form sends through the Resend REST API.
 
 1. Create a key at [resend.com/api-keys](https://resend.com/api-keys) and add it
    to Netlify as `RESEND_API_KEY`.
-2. Add `mriridescent.africa` at **Resend → Domains** and publish the DNS records
-   Resend shows (SPF, DKIM, and DMARC).
+2. Verify the sender domain in **Resend → Domains** and publish the DNS records
+   Resend shows (SPF, DKIM, and DMARC). The default sender uses
+   `hello.i2sltd.click`; once `mriridescent.africa` is verified, switch
+   `CONTACT_FROM_EMAIL` to `website@mriridescent.africa`.
 3. Wait for the domain to read **Verified**.
 4. Confirm delivery without opening the site:
 
@@ -93,7 +117,39 @@ time, so without a rebuild the published entry will not appear on the live site.
 `--no-rebuild` publishes without calling the hook. You can always trigger a deploy
 manually from **Netlify → Deploys → Trigger deploy**.
 
-## 6. Local verification before deploying
+## 6. CI/CD pipeline
+
+Two GitHub Actions workflows live in `.github/workflows`:
+
+| Workflow | Trigger | Purpose |
+| --- | --- | --- |
+| `ci.yml` | Push to `main`, pull requests, manual | `npm ci`, type-check, static build, upload `out` |
+| `deploy-netlify.yml` | Manual | Build and deploy through the Netlify CLI |
+
+`ci.yml` is the guardrail. It uses Node 20 and the committed
+`package-lock.json`, so it fails on the same mistakes a clean Netlify checkout
+would hit.
+
+The manual deploy workflow is optional. Configure these repository secrets in
+**GitHub → Settings → Secrets and variables → Actions**:
+
+| Secret | Value |
+| --- | --- |
+| `NETLIFY_AUTH_TOKEN` | Personal access token from the new Netlify account |
+| `NETLIFY_SITE_ID` | API ID of the new Netlify site |
+
+Then run **Actions → Deploy to Netlify → Run workflow**. Site variables such as
+`RESEND_API_KEY` still belong in Netlify, not in this workflow.
+
+### Build dependencies
+
+`netlify.toml` no longer sets `NODE_ENV=production`, and it sets
+`NPM_FLAGS=--include=dev`. Next.js needs `autoprefixer`, `postcss`,
+`tailwindcss`, and TypeScript at build time, and they are devDependencies. If a
+build reports `Cannot find module 'autoprefixer'`, confirm that flag is still
+present in the Netlify environment.
+
+## 7. Local verification before deploying
 
 ```bash
 npm run type-check
@@ -105,11 +161,13 @@ Open [http://localhost:4173](http://localhost:4173). The preview server mimics
 Netlify clean URLs, but `/api/contact` only runs on Netlify (or with
 `netlify dev`).
 
-## 7. Troubleshooting
+## 8. Troubleshooting
 
 | Symptom | Check |
 | --- | --- |
-| Build fails on `next build` | Run `npm run type-check` locally and confirm Node 20 |
+| `Cannot find module 'autoprefixer'` | `NPM_FLAGS=--include=dev` must be set; devDependencies must install |
+| `Can't resolve '@/lib/...'` | The file must be committed to the branch Netlify builds; run `git ls-files lib` |
+| Build fails on `next build` | Run `npm run type-check` and `npm run build` locally with Node 20 |
 | Journal shows only local essays | `CONTENTFUL_SPACE_ID` / `CONTENTFUL_ACCESS_TOKEN`, and rebuild after publishing |
 | Contact returns 503 | `RESEND_API_KEY` is missing in Netlify |
 | Contact returns 502 | Resend rejected the request; verify the sending domain and `CONTACT_FROM_EMAIL` |
