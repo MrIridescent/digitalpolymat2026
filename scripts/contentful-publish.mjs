@@ -22,7 +22,8 @@
  *   CONTENTFUL_ENVIRONMENT        default master
  *   CONTENTFUL_CONTENT_TYPE       default blogPost
  *   CONTENTFUL_LOCALE             default en-US
- *   BLOG_REBUILD_TOKEN            GitHub token that can dispatch workflows
+ *   BLOG_REBUILD_WEBHOOK_URL      Netlify build hook; triggers a redeploy
+ *   BLOG_REBUILD_TOKEN            optional GitHub token for Actions deployments
  *   BLOG_REBUILD_REPO             default mriridescent/digitalpolymat2026
  *   NEXT_PUBLIC_SITE_URL          used only to print the public URL
  */
@@ -663,6 +664,20 @@ async function setupContentType(cfg) {
 /* ------------------------------------------------------------------ */
 
 async function triggerRebuild() {
+  const hook = process.env.BLOG_REBUILD_WEBHOOK_URL?.trim()
+  if (hook) {
+    const response = await fetch(hook, { method: 'POST' })
+    if (!response.ok) {
+      console.warn(
+        `\nPublished in Contentful, but the Netlify rebuild hook failed (${response.status}).` +
+          '\nTrigger a deploy from Netlify → Deploys → Trigger deploy.'
+      )
+      return
+    }
+    console.log('\nNetlify rebuild triggered. The article appears when the deploy finishes.')
+    return
+  }
+
   const token = process.env.BLOG_REBUILD_TOKEN?.trim()
   const repo =
     process.env.BLOG_REBUILD_REPO?.trim() ||
@@ -673,8 +688,8 @@ async function triggerRebuild() {
     console.log(
       '\nThe entry is public in Contentful, but the static site has not rebuilt yet.'
     )
-    console.log('Run the "Deploy to cPanel" workflow manually, or set BLOG_REBUILD_TOKEN')
-    console.log('(a GitHub token with actions:write) to trigger it automatically.')
+    console.log('Set BLOG_REBUILD_WEBHOOK_URL to a Netlify build hook, or trigger a')
+    console.log('deploy from Netlify → Deploys → Trigger deploy.')
     return
   }
 

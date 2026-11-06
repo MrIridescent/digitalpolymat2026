@@ -179,7 +179,8 @@ exposed to the browser):
 | `CONTENTFUL_ENVIRONMENT` | Optional, defaults to `master` |
 | `CONTENTFUL_CONTENT_TYPE` | Optional, defaults to `blogPost` |
 | `CONTENTFUL_LOCALE` | Optional, defaults to `en-US` |
-| `BLOG_REBUILD_TOKEN` | Optional GitHub token that can dispatch the deploy workflow |
+| `BLOG_REBUILD_WEBHOOK_URL` | Optional Netlify build hook called after `blog:publish` |
+| `BLOG_REBUILD_TOKEN` | Optional fallback GitHub token for a workflow dispatch |
 | `BLOG_REBUILD_REPO` | Optional, defaults to `mriridescent/digitalpolymat2026` |
 
 `CONTENTFUL_MANAGEMENT_TOKEN` is a secret with write access. Keep it in
@@ -231,7 +232,7 @@ cp contentful/post-template.json contentful/post.json
 # 3. Validate without changing anything in Contentful
 npm run blog:validate
 
-# 4. Publish the entry and cover asset, then trigger the deploy workflow
+# 4. Publish the entry and cover asset, then trigger the Netlify build
 npm run blog:publish
 ```
 
@@ -258,11 +259,13 @@ JSON looks like this:
 already in Contentful, pass `coverAssetId` instead. `body` accepts Markdown, or
 a raw Contentful rich-text document (`bodyRichText`).
 
-For automatic rebuilds, add `BLOG_REBUILD_TOKEN` (a GitHub token with Actions:
-write) and, if needed, `BLOG_REBUILD_REPO`. The deploy workflow listens for the
-`contentful-publish` repository dispatch event and also supports manual
-`workflow_dispatch` runs. Without the token, run the deploy workflow manually
-after publishing, or push a commit.
+For automatic rebuilds, create a build hook in **Netlify → Site configuration →
+Build & deploy → Build hooks** and set it as `BLOG_REBUILD_WEBHOOK_URL`. The
+publish script calls the hook after the entry and cover are published, and Netlify
+rebuilds the static export. Without a hook, trigger a deploy from the Netlify
+dashboard after publishing. `BLOG_REBUILD_TOKEN` remains an optional fallback for
+a GitHub Actions workflow, but this repository deploys through Netlify's Git
+integration and ships no deploy workflow.
 
 You can still publish in the Contentful web app instead; just rebuild afterwards.
 `generateStaticParams` enumerates slugs at build time and `app/sitemap.ts`
@@ -313,13 +316,17 @@ non-standard location, set `PLAYWRIGHT_CHROMIUM_PATH`.
 
 ## Deployment
 
-The repository deploys to Netlify with `netlify.toml`:
+The repository deploys to Netlify with `netlify.toml`; the full walkthrough is
+in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 - Build command: `npm run build`
 - Publish directory: `out`
 - Node version: 20
 - Functions directory: `netlify/functions` (esbuild bundler)
 - Redirect: `/api/contact` → `/.netlify/functions/contact`
+
+Netlify's Git integration builds every push to `main`. No GitHub deploy workflow
+is required.
 
 ### Contact delivery
 
@@ -330,15 +337,17 @@ only and must never be committed or exposed with a `NEXT_PUBLIC_` prefix.
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `RESEND_API_KEY` | Yes for Resend | API key from [resend.com](https://resend.com) |
-| `CONTACT_TO_EMAIL` | Yes | Inbox that receives enquiries |
-| `CONTACT_FROM_EMAIL` | Yes | Verified sender on your Resend domain |
+| `RESEND_API_KEY` | Yes | API key from [resend.com](https://resend.com) |
+| `CONTACT_TO_EMAIL` | Recommended | Inbox for enquiries; defaults to `me@mriridescent.africa` |
+| `CONTACT_FROM_EMAIL` | Recommended | Verified sender on your Resend domain |
 | `CONTACT_AUTO_REPLY` | No | Set to `false` to disable the visitor acknowledgement |
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` | No | Fallback delivery when Resend is not configured |
 
-If no provider is configured the function returns a friendly 503 and the form
-offers WhatsApp as the immediate path. Visitors never see an email address:
-WhatsApp is the live-chat channel and the form is the asynchronous one.
+Every enquiry is delivered to `me@mriridescent.africa`, with the visitor set as
+`Reply-To`; a visitor acknowledgement follows by default. If no provider is
+configured the function returns a friendly 503, and the form shows a direct
+`me@mriridescent.africa` link plus the WhatsApp fallback. Run `npm run email:test`
+to verify Resend and the sender domain.
 
 The share kit uses the Web Share API where available and X, LinkedIn, WhatsApp,
 Telegram, and Facebook intent URLs everywhere else. Shared links include

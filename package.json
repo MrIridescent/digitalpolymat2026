@@ -16,7 +16,8 @@
     "generate:resume": "node scripts/generate-resume.mjs",
     "blog:setup": "node scripts/contentful-publish.mjs --setup",
     "blog:publish": "node scripts/contentful-publish.mjs",
-    "blog:validate": "node scripts/contentful-publish.mjs --dry-run"
+    "blog:validate": "node scripts/contentful-publish.mjs --dry-run",
+    "email:test": "node scripts/send-test-email.mjs"
   },
   "dependencies": {
     "@next/bundle-analyzer": "^15.0.0",

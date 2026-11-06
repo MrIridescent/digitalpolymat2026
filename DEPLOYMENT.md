@@ -1,168 +1,117 @@
-# 🚀 Digital Polymath Portfolio - Deployment Guide
+# Deployment — Netlify
 
-## 🌀 **KINETIC FEATURES PRESERVED** ✅
+The portfolio is a static Next.js export published from `out/`, with one Netlify
+Function for the contact form. `netlify.toml` already contains the build command,
+publish directory, Node version, function bundler, redirects, and headers.
 
-Your portfolio includes advanced kinetic features:
-- ✅ Dynamic Theme Engine with 12+ themes
-- ✅ Particle Systems & Neural Networks
-- ✅ KineticBackground animations
-- ✅ Framer Motion transitions
-- ✅ Three.js 3D backgrounds
-- ✅ Mouse-interactive effects
+## 1. Connect the repository
 
-## 🎯 **DEPLOYMENT OPTIONS**
+1. In Netlify, choose **Add new site → Import an existing project**.
+2. Connect GitHub and select `MrIridescent/digitalpolymat2026`.
+3. Netlify reads `netlify.toml`, so accept:
+   - **Build command:** `npm run build`
+   - **Publish directory:** `out`
+   - **Node version:** 20
+4. Deploy. The first build renders every route, including journal articles.
 
-### **Option 1: Vercel (RECOMMENDED - Zero Config)**
+No GitHub deploy workflow is used. Netlify builds on every push to `main`.
+
+## 2. Environment variables
+
+Add these in **Site configuration → Environment variables**. Build-time values
+are read by `npm run build`; `RESEND_*` is read by the function at runtime.
+
+| Variable | Required | Value / purpose |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | Yes | `https://mriridescent.africa` |
+| `RESEND_API_KEY` | Yes | Resend API key for the contact form |
+| `CONTACT_TO_EMAIL` | Recommended | `me@mriridescent.africa` |
+| `CONTACT_FROM_EMAIL` | Recommended | `David Akpoviroro Oke <website@mriridescent.africa>` |
+| `CONTACT_AUTO_REPLY` | No | `true` by default; `false` disables the visitor acknowledgement |
+| `CONTENTFUL_SPACE_ID` | Optional | Enables Contentful journal entries |
+| `CONTENTFUL_ACCESS_TOKEN` | Optional | Delivery API token (read-only) |
+| `CONTENTFUL_ENVIRONMENT` | Optional | Defaults to `master` |
+| `CONTENTFUL_CONTENT_TYPE` | Optional | Defaults to `blogPost` |
+| `CONTENTFUL_LOCALE` | Optional | Defaults to `en-US` |
+| `BLOG_REBUILD_WEBHOOK_URL` | Optional | Netlify build hook used by `npm run blog:publish` |
+
+`CONTENTFUL_MANAGEMENT_TOKEN` is only needed locally to publish posts. Do not add
+it to Netlify: the build only reads content. Never prefix a secret with
+`NEXT_PUBLIC_`, and never commit `.env.local`.
+
+If the Contentful variables are missing or the API fails, the build still
+succeeds and renders the five local essays in `lib/blog-fallback.ts`.
+
+## 3. Verify Resend
+
+The contact form sends through the Resend REST API.
+
+1. Create a key at [resend.com/api-keys](https://resend.com/api-keys) and add it
+   to Netlify as `RESEND_API_KEY`.
+2. Add `mriridescent.africa` at **Resend → Domains** and publish the DNS records
+   Resend shows (SPF, DKIM, and DMARC).
+3. Wait for the domain to read **Verified**.
+4. Confirm delivery without opening the site:
+
+   ```bash
+   npm run email:test
+   ```
+
+   The script reads `RESEND_API_KEY` from `.env.local`, sends a test to
+   `CONTACT_TO_EMAIL` (default `me@mriridescent.africa`), and prints the Resend ID.
+   A `403` means the sender domain is not verified yet.
+
+Every enquiry is delivered to `me@mriridescent.africa`, with the visitor's address
+set as `Reply-To`. Visitors also receive a short acknowledgement when
+`CONTACT_AUTO_REPLY` is not `false`.
+
+Until `RESEND_API_KEY` is present, the function returns a clear 503 and the form
+shows a direct email link and a WhatsApp fallback. After the deploy, submit the
+form once and confirm both messages arrive.
+
+## 4. Custom domain
+
+1. **Domain management → Add a domain** and enter `mriridescent.africa`.
+2. Point the apex `A` record and `www` `CNAME` to the values Netlify shows, or
+   move the nameservers to Netlify DNS.
+3. Wait for the certificate, then choose the primary domain. `NEXT_PUBLIC_SITE_URL`
+   must match it so canonical URLs, Open Graph tags, and the sitemap stay correct.
+
+## 5. Publishing a journal post
+
 ```bash
-# Install Vercel CLI
-npm install -g vercel
-
-# Deploy with all kinetic features
-vercel --prod
+npm run blog:setup      # first time only: create the blogPost content type
+npm run blog:validate   # check contentful/post.json without writing
+npm run blog:publish    # write, publish, then call the build hook
 ```
-**✅ Pros:** Zero config, automatic SSR, perfect for Next.js, keeps all features
-**⚡ Speed:** Ultra-fast global CDN
-**💰 Cost:** Free tier available
 
----
+Create the build hook in **Site configuration → Build & deploy → Build hooks**,
+copy its URL, and set it as `BLOG_REBUILD_WEBHOOK_URL` in `.env.local` (and in
+Netlify if you publish from a Netlify build). Contentful posts are read at build
+time, so without a rebuild the published entry will not appear on the live site.
 
-### **Option 2: Netlify (SSR Support)**
+`--no-rebuild` publishes without calling the hook. You can always trigger a deploy
+manually from **Netlify → Deploys → Trigger deploy**.
+
+## 6. Local verification before deploying
+
 ```bash
-# Build for Netlify
+npm run type-check
 npm run build
-
-# Deploy via Netlify CLI or drag .next folder to Netlify dashboard
-netlify deploy --prod --dir=.next
-```
-**✅ Pros:** Great SSR support, form handling, serverless functions
-**⚡ Speed:** Fast global CDN
-**💰 Cost:** Free tier available
-
----
-
-### **Option 3: cPanel with Node.js Support**
-```bash
-# Build the application
-npm run deploy:cpanel
-
-# Upload these files to your cPanel:
-# - .next/ folder (entire folder)
-# - package.json
-# - next.config.js
-# - node_modules/ (or run npm install on server)
-
-# Set startup file in cPanel: server.js or next start
-```
-**✅ Pros:** Works with your preferred cPanel hosting
-**⚠️ Requirements:** Node.js support (v18+) required on hosting
-
----
-
-### **Option 4: Static Export (Fallback - Some Features Limited)**
-```bash
-# Generate static files (some kinetic features may be limited)
-npm run deploy:static
-
-# Upload 'out' folder contents to any hosting
-```
-**⚠️ Note:** Some dynamic features may be limited in static mode
-
----
-
-## 🔧 **HOSTING REQUIREMENTS**
-
-### **For Full Kinetic Features (SSR):**
-- Node.js 18+ support
-- Next.js runtime support
-- 512MB+ RAM recommended
-
-### **For Static Hosting:**
-- Any web hosting (Apache, Nginx, etc.)
-- No server requirements
-- Some kinetic features may be limited
-
----
-
-## 🌟 **RECOMMENDED DEPLOYMENT FLOW**
-
-1. **Test locally:**
-   ```bash
-   npm run dev
-   ```
-
-2. **Build for production:**
-   ```bash
-   npm run build
-   ```
-
-3. **Deploy to Vercel (easiest):**
-   ```bash
-   vercel --prod
-   ```
-
-4. **Or deploy to Netlify:**
-   ```bash
-   netlify deploy --prod --dir=.next
-   ```
-
----
-
-## 🎨 **KINETIC FEATURES STATUS**
-
-✅ **Active in SSR Mode:**
-- Dynamic theme switching
-- Particle animations
-- Mouse-interactive effects
-- Smooth page transitions
-- 3D backgrounds
-- Neural network visualizations
-
-⚠️ **Limited in Static Mode:**
-- Theme persistence
-- Real-time interactions
-- Server-side theme detection
-
----
-
-## 🚀 **QUICK DEPLOY COMMANDS**
-
-```bash
-# Vercel (recommended)
-npm run build && vercel --prod
-
-# Netlify
-npm run build && netlify deploy --prod --dir=.next
-
-# Static hosting
-npm run deploy:static
-# Then upload 'out' folder contents
-
-# cPanel with Node.js
-npm run deploy:cpanel
-# Then upload .next folder + config files
+node scripts/preview-server.cjs
 ```
 
----
+Open [http://localhost:4173](http://localhost:4173). The preview server mimics
+Netlify clean URLs, but `/api/contact` only runs on Netlify (or with
+`netlify dev`).
 
-## 🔍 **TROUBLESHOOTING**
+## 7. Troubleshooting
 
-**Issue:** Kinetic features not working
-**Solution:** Ensure SSR deployment (Vercel/Netlify), not static export
-
-**Issue:** Slow loading
-**Solution:** Enable image optimization in hosting platform
-
-**Issue:** Theme not persisting
-**Solution:** Check localStorage support in hosting environment
-
----
-
-## 📞 **SUPPORT**
-
-For deployment issues:
-1. Check browser console for errors
-2. Verify Node.js version compatibility
-3. Test locally with `npm run build && npm start`
-4. Contact hosting provider for Node.js support
-
-**Your kinetic portfolio is ready to deploy! 🌀✨**
+| Symptom | Check |
+| --- | --- |
+| Build fails on `next build` | Run `npm run type-check` locally and confirm Node 20 |
+| Journal shows only local essays | `CONTENTFUL_SPACE_ID` / `CONTENTFUL_ACCESS_TOKEN`, and rebuild after publishing |
+| Contact returns 503 | `RESEND_API_KEY` is missing in Netlify |
+| Contact returns 502 | Resend rejected the request; verify the sending domain and `CONTACT_FROM_EMAIL` |
+| New post not live | The build hook did not run; redeploy from the Netlify dashboard |
+| Deep link returns 404 | Confirm `publish = "out"` and the `/api/contact` redirect in `netlify.toml` |

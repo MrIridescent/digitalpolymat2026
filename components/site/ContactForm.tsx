@@ -6,6 +6,7 @@ import {
   ArrowUpRight,
   CheckCircle2,
   Loader2,
+  Mail,
   MessageCircle,
   Send,
   Sparkles,
@@ -79,7 +80,7 @@ export function ContactForm() {
       if (!response.ok || result.ok !== true) {
         throw new Error(
           result.message ||
-            'The message could not be sent right now. Please use WhatsApp instead.'
+            'The message could not be sent right now. Email me@mriridescent.africa or use WhatsApp.'
         )
       }
 
@@ -90,7 +91,7 @@ export function ContactForm() {
       setError(
         submissionError instanceof Error
           ? submissionError.message
-          : 'The message could not be sent right now. Please use WhatsApp instead.'
+          : 'The message could not be sent right now. Email me@mriridescent.africa or use WhatsApp.'
       )
       setStatus('error')
     }
@@ -275,15 +276,24 @@ export function ContactForm() {
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
             <p>{error}</p>
-            <a
-              href={whatsappFallback}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 inline-flex items-center gap-1.5 font-medium text-white underline decoration-white/25 underline-offset-4 hover:decoration-white"
-            >
-              <MessageCircle className="h-3.5 w-3.5" />
-              Send it on WhatsApp instead
-            </a>
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <a
+                href={site.emailHref}
+                className="inline-flex items-center gap-1.5 font-medium text-white underline decoration-white/25 underline-offset-4 hover:decoration-white"
+              >
+                <Mail className="h-3.5 w-3.5" />
+                Email {site.email}
+              </a>
+              <a
+                href={whatsappFallback}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 font-medium text-white/70 underline decoration-white/20 underline-offset-4 hover:text-white hover:decoration-white/40"
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                Send it on WhatsApp instead
+              </a>
+            </div>
           </div>
         </div>
       )}

@@ -9,9 +9,12 @@
  *   2. SMTP via nodemailer (SMTP_HOST, SMTP_USER, SMTP_PASS)
  *
  * Required environment variables:
- *   CONTACT_TO_EMAIL    private inbox that receives enquiries
- *   CONTACT_FROM_EMAIL  verified sender, e.g. "David <website@your-domain>"
- *   RESEND_API_KEY      or the SMTP_* set below
+ *   RESEND_API_KEY      from resend.com; the only required secret
+ *
+ * Optional:
+ *   CONTACT_TO_EMAIL    defaults to me@mriridescent.africa
+ *   CONTACT_FROM_EMAIL  defaults to "David Akpoviroro Oke <website@mriridescent.africa>"
+ *   SMTP_*              fallback delivery when Resend is not configured
  *
  * Optional:
  *   CONTACT_AUTO_REPLY  set to "false" to disable the visitor confirmation
@@ -262,26 +265,23 @@ exports.handler = async (event) => {
     })
   }
 
-  const to = process.env.CONTACT_TO_EMAIL
+  // Every enquiry lands in this inbox. The environment variable can override
+  // it, but the default keeps the form working even if Netlify is missing it.
+  const to = process.env.CONTACT_TO_EMAIL || 'me@mriridescent.africa'
   const from =
-    process.env.CONTACT_FROM_EMAIL || process.env.SMTP_FROM || 'website@mriridescent.africa'
+    process.env.CONTACT_FROM_EMAIL ||
+    process.env.SMTP_FROM ||
+    'David Akpoviroro Oke <website@mriridescent.africa>'
   const resendKey = process.env.RESEND_API_KEY
   const smtpReady = Boolean(
     process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS
   )
 
-  if (!to) {
-    return json(503, {
-      ok: false,
-      message:
-        'The contact inbox is not configured yet. Please use WhatsApp and I will pick it up there.',
-    })
-  }
   if (!resendKey && !smtpReady) {
     return json(503, {
       ok: false,
       message:
-        'Email delivery is not configured yet. Please use WhatsApp and I will pick it up there.',
+        'Email delivery is not configured yet. Please email me@mriridescent.africa or use WhatsApp.',
     })
   }
 
@@ -301,9 +301,13 @@ exports.handler = async (event) => {
       })
 
       if (process.env.CONTACT_AUTO_REPLY !== 'false') {
-        sendAutoReply({ payload, subject, from, apiKey: resendKey }).catch((error) => {
+        // Wait for this send so Netlify does not freeze the function before
+        // the acknowledgement leaves. A failure never blocks the enquiry.
+        try {
+          await sendAutoReply({ payload, subject, from, apiKey: resendKey })
+        } catch (error) {
           console.warn('Auto-reply failed:', error.message)
-        })
+        }
       }
     } else {
       await sendWithSmtp({ from, to, payload, subject, text, html })
