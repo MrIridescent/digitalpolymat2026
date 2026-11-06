@@ -17,8 +17,10 @@ searching through components.
 | --- | --- | --- |
 | `portraits/david-akpoviroro-oke.jpg` | `/media/portraits/david-akpoviroro-oke.jpg` | Home hero, About |
 | `brand/mr-iridescent-logo.png` | `/media/brand/mr-iridescent-logo.png` | About, Share kit, Media library |
-| `brand/mr-iridescent-mark.png` | `/media/brand/mr-iridescent-mark.png` | Navigation, Footer, Home |
+| `brand/mr-iridescent-mark.png` | `/media/brand/mr-iridescent-mark.png` | Navigation, Footer, Home, favicons |
 | `brand/mr-iridescent-logo.jpg` | `/media/brand/mr-iridescent-logo.jpg` | Archival source; do not crop |
+| `brand/mr-iridescent-infinity.png` | `/media/brand/mr-iridescent-infinity.png` | Former infinity lockup, retained for page transitions |
+| `brand/mr-iridescent-infinity-light.png` | `/media/brand/mr-iridescent-infinity-light.png` | Ivory variant shown on the dark transition curtain |
 | `brand/og-card.jpg` | `/media/brand/og-card.jpg` | Open Graph, Twitter cards, article schema |
 | `../favicon.svg` | `/favicon.svg` | Browser tab icon (generated) |
 | `../favicon.ico` | `/favicon.ico` | Legacy tab, feed, and pinned-tab icon (generated) |
@@ -64,15 +66,14 @@ one path:
 
 - File: `brand/mr-iridescent-mark.png`
 - Path constant: `brandMark` in [`lib/profile.ts`](../../lib/profile.ts)
-- Source size: **512 × 512 px square** (256 × 256 minimum)
+- Source size: **768 × 768 px square** (256 × 256 minimum)
 - Displayed at: **32 px** in the mobile header, **36 px** in the desktop header,
   and **40 px** in the footer
 
-Keep the important artwork inside the central 80% of the square, because the
-mark is cropped into a circle and sits on an ivory plate with a small inset.
-Use a transparent or ivory background; black artwork disappears on the dark
-header without the plate. To change the logo, replace that one PNG (or update
-`brandMark.src` if you use a different filename), then run
+The mark is a full-colour black disc with transparent corners, so it sits on the
+ivory plate in the header and footer. Keep essential artwork inside the central
+80% and keep the corners transparent. To change the logo, replace that one PNG
+(or update `brandMark.src` if you use a different filename), then run
 `npm run generate:favicon` so the browser icons match.
 
 ## Journal covers

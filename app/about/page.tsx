@@ -146,9 +146,9 @@ export default function AboutPage() {
             <div className="mt-5 rounded-2xl border border-white/10 bg-[#f7f5ef] p-4">
               <Image
                 src="/media/brand/mr-iridescent-logo.png"
-                alt="Mr Iridescent — Creative Renaissance Man brand lockup"
-                width={1200}
-                height={704}
+                alt="Mr Iridescent — crowned MR monogram with the iridescent eye"
+                width={768}
+                height={768}
                 className="h-auto w-full"
               />
               <p className="mt-2 text-center font-mono text-[0.52rem] uppercase tracking-[0.16em] text-[#15161a]/40">

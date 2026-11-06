@@ -88,9 +88,9 @@ export default function SharePage() {
             <div className="overflow-hidden rounded-xl bg-[#f7f5ef] p-4">
               <Image
                 src="/media/brand/mr-iridescent-logo.png"
-                alt="Mr Iridescent — Creative Renaissance Man brand lockup"
-                width={1200}
-                height={704}
+                alt="Mr Iridescent — crowned MR monogram with the iridescent eye"
+                width={768}
+                height={768}
                 className="h-auto w-full"
               />
             </div>

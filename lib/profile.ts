@@ -54,8 +54,8 @@ export const site = {
  */
 export const brandMark = {
   src: '/media/brand/mr-iridescent-mark.png',
-  width: 512,
-  height: 512,
+  width: 768,
+  height: 768,
   headerSize: { mobile: 32, desktop: 36 },
   footerSize: 40,
 } as const

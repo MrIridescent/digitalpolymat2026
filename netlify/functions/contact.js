@@ -13,7 +13,7 @@
  *
  * Optional:
  *   CONTACT_TO_EMAIL    defaults to me@mriridescent.africa
- *   CONTACT_FROM_EMAIL  defaults to "David Akpoviroro Oke <website@mriridescent.africa>"
+ *   CONTACT_FROM_EMAIL  defaults to "David Akpoviroro Oke <website@hello.i2sltd.click>"
  *   SMTP_*              fallback delivery when Resend is not configured
  *
  * Optional:
@@ -271,7 +271,7 @@ exports.handler = async (event) => {
   const from =
     process.env.CONTACT_FROM_EMAIL ||
     process.env.SMTP_FROM ||
-    'David Akpoviroro Oke <website@mriridescent.africa>'
+    'David Akpoviroro Oke <website@hello.i2sltd.click>'
   const resendKey = process.env.RESEND_API_KEY
   const smtpReady = Boolean(
     process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS

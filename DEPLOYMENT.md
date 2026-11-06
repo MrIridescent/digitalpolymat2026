@@ -26,7 +26,7 @@ are read by `npm run build`; `RESEND_*` is read by the function at runtime.
 | `NEXT_PUBLIC_SITE_URL` | Yes | `https://mriridescent.africa` |
 | `RESEND_API_KEY` | Yes | Resend API key for the contact form |
 | `CONTACT_TO_EMAIL` | Recommended | `me@mriridescent.africa` |
-| `CONTACT_FROM_EMAIL` | Recommended | `David Akpoviroro Oke <website@mriridescent.africa>` |
+| `CONTACT_FROM_EMAIL` | Recommended | `David Akpoviroro Oke <website@hello.i2sltd.click>` (verified sender) |
 | `CONTACT_AUTO_REPLY` | No | `true` by default; `false` disables the visitor acknowledgement |
 | `CONTENTFUL_SPACE_ID` | Optional | Enables Contentful journal entries |
 | `CONTENTFUL_ACCESS_TOKEN` | Optional | Delivery API token (read-only) |

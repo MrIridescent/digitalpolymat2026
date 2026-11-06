@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { motion, useReducedMotion } from 'framer-motion'
 import { usePathname } from 'next/navigation'
 
@@ -27,9 +28,25 @@ export function RouteTransition() {
         initial={{ opacity: 1 }}
         animate={{ opacity: 0 }}
         transition={{ duration: 0.35, delay: 0.1 }}
-        className="absolute inset-0 flex items-center justify-center"
+        className="absolute inset-0 flex items-center justify-center px-6"
       >
-        <span className="k-mono text-white/50">Mr Iridescent · 2026</span>
+        <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
+          <Image
+            src="/media/brand/mr-iridescent-infinity-light.png"
+            alt=""
+            width={1199}
+            height={592}
+            priority
+            className="h-auto w-40 sm:w-48"
+          />
+          <span aria-hidden="true" className="hidden h-10 w-px bg-white/15 sm:block" />
+          <p className="text-center sm:text-left">
+            <span className="k-mono block text-white/65">Mr Iridescent 2026</span>
+            <span className="mt-1 block font-mono text-[0.5rem] uppercase tracking-[0.18em] text-white/35">
+              Creative Renaissance Man
+            </span>
+          </p>
+        </div>
       </motion.div>
     </motion.div>
   )

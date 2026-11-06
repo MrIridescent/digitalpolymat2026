@@ -15,38 +15,16 @@ const root = new URL('../', import.meta.url)
 const path = (relative) => fileURLToPath(new URL(relative, root))
 
 const source = path('public/media/brand/mr-iridescent-mark.png')
-const mark = sharp(source)
-const meta = await mark.metadata()
-const width = meta.width ?? 512
-const height = meta.height ?? 512
 
-// The supplied mark is black artwork on an opaque white square. Convert
-// luminance into alpha so the mark can sit cleanly on the ivory plate.
-const alpha = await mark.clone().grayscale().negate().toBuffer()
-
-const blackArtwork = await sharp({
-  create: {
-    width,
-    height,
-    channels: 3,
-    background: { r: 0, g: 0, b: 0 },
-  },
-})
-  .joinChannel(alpha)
-  .png()
-  .toBuffer()
-
-const trimmed = await sharp(blackArtwork)
-  .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 } })
-  .png()
-  .toBuffer()
-
+// The mark is full-colour artwork: a black disc with transparent corners.
+// Trim any residual transparent edge and composite it intact onto the plate.
+const trimmed = await sharp(source).trim({ threshold: 12 }).png().toBuffer()
 const trimmedMeta = await sharp(trimmed).metadata()
-const artWidth = trimmedMeta.width ?? width
-const artHeight = trimmedMeta.height ?? height
+const artWidth = trimmedMeta.width ?? 512
+const artHeight = trimmedMeta.height ?? 512
 
 const PLATE = '#f7f5ef'
-const CONTENT_RATIO = 0.84
+const CONTENT_RATIO = 0.9
 
 function plateSvg(size) {
   const radius = Math.round(size * 0.22)
@@ -69,7 +47,7 @@ async function render(size) {
 
   return sharp(plateSvg(size))
     .composite([{ input: art, top, left }])
-    .png({ compressionLevel: 9 })
+    .png({ palette: true, quality: 92, compressionLevel: 9 })
     .toBuffer()
 }
 
@@ -159,7 +137,5 @@ const manifest = {
 }
 await writeFile(path('public/site.webmanifest'), `${JSON.stringify(manifest, null, 2)}\n`)
 
-console.log(
-  `Favicon set generated from ${width}×${height} mark (trimmed ${artWidth}×${artHeight}).`
-)
+console.log(`Favicon set generated from the ${artWidth}×${artHeight} mark.`)
 console.log('favicon.ico, favicon.svg, PNG icons, apple-touch-icon, Android icons, site.webmanifest')

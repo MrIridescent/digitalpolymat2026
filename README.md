@@ -280,7 +280,7 @@ All visual assets are discoverable at `/media` and documented in
 | Asset | Path |
 | --- | --- |
 | Portrait | `public/media/portraits/david-akpoviroro-oke.jpg` |
-| Brand lockup | `public/media/brand/mr-iridescent-logo.png` |
+| Primary logo | `public/media/brand/mr-iridescent-logo.png` |
 | Square mark | `public/media/brand/mr-iridescent-mark.png` |
 | Social card | `public/media/brand/og-card.jpg` |
 | Organization logos | `public/media/orgs/` |
@@ -296,8 +296,8 @@ Replace a file at the same path to update every page that uses it. If a filename
 changes, update `lib/media.ts` and the references in its `usedIn` field.
 
 The mark beside the name in the header is `public/media/brand/mr-iridescent-mark.png`,
-referenced once as `brandMark` in `lib/profile.ts`. Use a **512 × 512 px square
-PNG** (256 × 256 minimum) with transparent or ivory background. It renders at
+referenced once as `brandMark` in `lib/profile.ts`. Use a **768 × 768 px square
+PNG** (256 × 256 minimum) with transparent corners. It renders at
 32 px on mobile, 36 px in the desktop header, and 40 px in the footer, cropped to
 a circle inside an ivory plate. Keep detail within the central 80% of the square.
 After replacing it, run `npm run generate:favicon` so the browser icons match.
