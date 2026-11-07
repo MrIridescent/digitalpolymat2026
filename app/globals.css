@@ -943,6 +943,16 @@ html.lenis body {
   }
 }
 
+/* Netlify's free-plan HUD injects a fixed <iframe id="nl-badge-frame"> into
+   every HTML response at the edge and layers it above the page at
+   z-index 2147483645, so no component can sit over it. The durable switch is
+   the project setting (Project configuration → General → Powered by Netlify
+   badge); this rule keeps the badge out of the composition on every viewport
+   even before that setting propagates through the CDN. */
+iframe#nl-badge-frame {
+  display: none !important;
+}
+
 @media print {
   body {
     background: #fff !important;

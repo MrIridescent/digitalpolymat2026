@@ -366,6 +366,28 @@ export const services: readonly Service[] = [
     icon: 'shield',
   },
   {
+    slug: 'personal-security-adviser',
+    name: 'IT Security Personal Adviser',
+    kicker: 'Private threat model → daily confidence',
+    summary:
+      'Discreet, one-to-one counsel for founders, executives, public figures and families. I review the accounts, devices, communications and travel routines that carry your life online, then harden them — with practical security research and development behind every recommendation.',
+    outcomes: [
+      'A personal threat model that matches your real exposure',
+      'Hardened accounts, devices and recovery paths',
+      'A clear response plan for compromise or harassment',
+      'A trusted adviser on call, not a call centre',
+    ],
+    deliverables: [
+      'Personal security audit',
+      'Account & device hardening',
+      'Recovery and succession plan',
+      'Incident playbook',
+      'Quarterly review',
+    ],
+    engagement: 'Private retainer · On-call advisory',
+    icon: 'shield',
+  },
+  {
     slug: 'creative-brand-systems',
     name: 'Brand systems & art direction',
     kicker: 'Identity → cultural weight',

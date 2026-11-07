@@ -1,10 +1,16 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowDown, ArrowUpRight } from 'lucide-react'
 import { ProjectExplorer } from '@/components/site/ProjectExplorer'
-import { BreadcrumbStructuredData, ProjectsStructuredData } from '@/components/StructuredData'
+import { LiveSiteCard } from '@/components/site/LiveSiteCard'
+import {
+  BreadcrumbStructuredData,
+  LiveSitesStructuredData,
+  ProjectsStructuredData,
+} from '@/components/StructuredData'
 import { generateMetaTags, pageMetadata } from '@/lib/seo-config'
 import { projectCount } from '@/lib/projects'
+import { liveProjectCount, liveProjects } from '@/lib/live-projects'
 
 export const metadata: Metadata = generateMetaTags(
   pageMetadata.projects.title,
@@ -17,6 +23,7 @@ export default function ProjectsPage() {
   return (
     <div className="pt-16">
       <ProjectsStructuredData />
+      <LiveSitesStructuredData />
       <BreadcrumbStructuredData
         items={[
           { name: 'Home', path: '/' },
@@ -30,12 +37,20 @@ export default function ProjectsPage() {
             The work, <span className="iridescent-text italic">in the open.</span>
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/55">
-            {projectCount} curated projects from 34 original public repositories —
-            every one created by me, with no forks. Security platforms, applied
-            AI, civic infrastructure, client sites, and experiments that refused
-            to stay theoretical.
+            {projectCount} curated repositories from 34 original public projects,
+            plus {liveProjectCount} live client and concept sites — every one
+            created by me, with no forks. Security platforms, applied AI, civic
+            infrastructure, front-end work, and experiments that refused to stay
+            theoretical.
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-white/35">
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-white/35">
+            <a
+              href="#live"
+              className="inline-flex items-center gap-1.5 text-white/60 hover:text-white"
+            >
+              See the live sites
+              <ArrowDown className="h-3 w-3" />
+            </a>
             <a
               href="https://github.com/MrIridescent"
               target="_blank"
@@ -50,8 +65,48 @@ export default function ProjectsPage() {
         </div>
       </section>
 
-      <section className="section-tight">
+      <section id="live" className="section scroll-mt-24">
         <div className="shell">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="eyebrow">Live work · the front end in the world</p>
+              <h2 className="display mt-5 max-w-3xl text-4xl text-white sm:text-5xl">
+                {liveProjectCount} sites,{' '}
+                <span className="iridescent-text italic">shipped and breathing.</span>
+              </h2>
+              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-white/50 sm:text-base">
+                Client work, campaign sites and portfolio studies, captured at
+                1440 px and left to speak for themselves. Every card opens the
+                real site — no mockups, no unavailable links.
+              </p>
+            </div>
+            <p className="shrink-0 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-white/30">
+              {liveProjectCount} live · 2024–2026
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-5 lg:grid-cols-2">
+            {liveProjects.map((site, index) => (
+              <LiveSiteCard key={site.slug} site={site} index={index} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section-tight border-t border-white/10">
+        <div className="shell">
+          <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="eyebrow">Open source · the repository archive</p>
+              <h2 className="display mt-4 max-w-2xl text-3xl text-white sm:text-4xl">
+                Code you can read.
+              </h2>
+            </div>
+            <p className="shrink-0 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-white/30">
+              {projectCount} repositories
+            </p>
+          </div>
+
           <ProjectExplorer />
 
           <div className="mt-14 rounded-2xl border border-white/10 bg-ink-soft p-7 sm:p-9">

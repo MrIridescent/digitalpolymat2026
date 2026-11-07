@@ -8,6 +8,7 @@ import {
   advocacy,
 } from '@/lib/profile'
 import { projects } from '@/lib/projects'
+import { liveProjects } from '@/lib/live-projects'
 import { allHubs, corridors, hubRegions, remoteSteps } from '@/lib/global'
 import { faqs, globalFaqs } from '@/lib/faq'
 import { getPosts, postHref } from '@/lib/contentful'
@@ -119,6 +120,15 @@ export async function GET() {
         )}) — ${project.tagline} ${project.description} Repository: ${project.repo}${
           project.live ? ` Live: ${project.live}` : ''
         }`
+    ),
+    '',
+    '## Live sites',
+    '',
+    `Public front-end work by ${site.name}: ${liveProjects.length} live sites, each one open to inspection in the browser. Client sites, campaign sites and portfolio concepts are labelled as such; no mockups or unavailable links.`,
+    '',
+    ...liveProjects.map(
+      (project) =>
+        `- ${project.name} (${project.kind}) — ${project.domain}. ${project.summary} Live: ${project.url}`
     ),
     '',
     '## Green software and Agenda 2063',

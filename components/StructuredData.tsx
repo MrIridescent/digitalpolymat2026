@@ -1,6 +1,7 @@
 import { seoConfig, CONTENT_UPDATED, siteOrigin, pageMetadata } from '@/lib/seo-config'
 import { site, socials, services, brandMark } from '@/lib/profile'
 import { projects } from '@/lib/projects'
+import { liveProjects } from '@/lib/live-projects'
 import { allHubs } from '@/lib/global'
 import { faqs, type FaqItem } from '@/lib/faq'
 
@@ -296,6 +297,33 @@ export function ProjectsStructuredData() {
           name: site.name,
         },
         url: project.live || project.repo,
+      },
+    })),
+  }
+
+  return <JsonLd data={data} />
+}
+
+export function LiveSitesStructuredData() {
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    '@id': `${origin}/projects#live`,
+    name: 'Live sites by David Akpoviroro Oke',
+    numberOfItems: liveProjects.length,
+    itemListElement: liveProjects.map((project, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'WebSite',
+        name: project.name,
+        url: project.url,
+        description: project.summary,
+        author: {
+          '@type': 'Person',
+          '@id': `${origin}/#person`,
+          name: site.name,
+        },
       },
     })),
   }
